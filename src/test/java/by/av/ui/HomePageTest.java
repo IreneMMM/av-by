@@ -38,10 +38,14 @@ public class HomePageTest extends BaseTest {
 		String selectedTheme = "dark";
 		homePage.chooseTheme(selectedTheme);
 		homePage.refreshPage();
-		Thread.sleep(3000);
 		Assertions.assertTrue(homePage.isThemeActive(selectedTheme), "Dark theme is not saved");
 	}
 
-
-
+	@Test
+	@DisplayName("Check navigation items are displayed")
+	public void testNavigationItemsAreDisplayed() {
+		for (String navItem : homePage.getNavigationItems()) {
+			Assertions.assertTrue(homePage.isNavigationItemDisplayed(navItem), navItem + " is not displayed");
+		}
+	}
 }

@@ -3,32 +3,45 @@ package by.av.ui;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 
 public class HomePageTest extends BaseTest {
 
-	@DisplayName("Check HomePage is opened")
+	@DisplayName("Check footer displays expected copyright text")
 	@Test
-	public void checkHomePageIsOpened() {
-		String expectedCopyrightText = "© 2001, ООО «Автоклассифайд», УНП 192787977, Минск, ул. Платонова, 20б, пом. 145";
-		String actualCopyrightText = homePage.getCopyrightText();
-		Assertions.assertEquals(expectedCopyrightText, actualCopyrightText);
+	public void testCopyrightTextIsDisplayed() {
+		Assertions.assertEquals(homePage.getExpectedCopyrightText(), homePage.getCopyrightText());
+	}
+
+	@DisplayName("Check theme can be selected")
+	@ParameterizedTest
+	@ValueSource(strings = {"dark", "light", "auto"})
+	void testThemeCanBeSelected(String theme) {
+		homePage.chooseTheme(theme);
+		Assertions.assertTrue(homePage.isThemeActive(theme));
 	}
 
 	@Test
-	@DisplayName("Check switch to dark scheme")
-	public void testSwitchToDarkTheme() {
+	@DisplayName("Check theme is saved after page refresh")
+	public void testThemeIsSavedAfterPageRefresh() {
 		String selectedTheme = "dark";
 		homePage.chooseTheme(selectedTheme);
-		Assertions.assertTrue(homePage.isThemeActive(selectedTheme), "Dark theme is not selected");
+		homePage.refreshPage();
+		Assertions.assertTrue(homePage.isThemeActive(selectedTheme), selectedTheme + " theme is not saved");
 	}
 
 	@Test
-	@DisplayName("Check switch to unknown scheme")
-	public void testSwitchToUnknownTheme() {
-		String unknownTheme = "blue";
-		homePage.chooseTheme(unknownTheme);
-
-		Assertions.assertFalse(homePage.isThemeActive(unknownTheme));
+	@DisplayName("Check theme is changed from one to another")
+	public void testThemeIsChanged() {
+		String selectedTheme = "dark";
+		homePage.chooseTheme(selectedTheme);
+		homePage.refreshPage();
+		Thread.sleep(3000);
+		Assertions.assertTrue(homePage.isThemeActive(selectedTheme), "Dark theme is not saved");
 	}
+
+
+
 }

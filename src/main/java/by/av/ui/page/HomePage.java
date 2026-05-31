@@ -4,17 +4,24 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
+import java.util.List;
 
 public class HomePage extends BasePage {
 	private static final String BASE_URL = "https://av.by/";
+	private static final String COPYRIGHT_TEXT = "© 2001, ООО «Автоклассифайд», УНП 192787977, Минск, ул. Платонова, 20б, пом. 145";
+	private static final List<String> NAVIGATION_ITEMS = List.of(
+			"Объявления", "Сервисы", "Журнал", "Знания", "Услуги", "Проверка VIN"
+	);
 
 	private final By acceptCookieButton = By.xpath("//button[@class=\"button button--primary button--block button--large\"]");
 	private final By copyrightText = By.xpath("//div[@class='footer__copy']");
+	private final By adsNavLink = By.xpath("//nav//a[.//span[text()='Объявления']]");
+	private final By servicesNavLink = By.xpath("//nav//a[.//span[text()='Сервисы']]");
 	private final By newsNavLink = By.xpath("//a[@href=\"/news\"]/span");
-	private final By vinCheckNavLink = By.xpath("//li[contains(@class=\"nav__item--alt\")]/a");
+	private final By knowledgeNavLink = By.xpath("//nav//a[.//span[text()='Знания']]");
+	private final By paidServicesNavLink = By.xpath("//nav//a[.//span[text()='Услуги']]");
+	private final By vinCheckNavLink = By.xpath("//li[contains(@class,'nav__item--alt')]/a");
 	private final By loginButton = By.xpath("//li[contains(@class,\"nav__item--login\")]/a");
 	private final By submitAdButton = By.xpath("//li[contains(@class,\"nav__item--add\")]/button");
 	private final By themeToggleBtn = By.xpath("//button[contains(@class,\"theme__control\")]");
@@ -31,12 +38,15 @@ public class HomePage extends BasePage {
 		driver.get(BASE_URL);
 	}
 
+	public void refreshPage() {
+		driver.navigate().refresh();
+	}
+
 	public void acceptCookies() {
-		WebDriverWait cookieWait = new WebDriverWait(driver, Duration.ofSeconds(5));
 		try {
-			WebElement cookieBtn = cookieWait.until(ExpectedConditions.elementToBeClickable(acceptCookieButton));
-			cookieBtn.click();
-			cookieWait.until(ExpectedConditions.invisibilityOfElementLocated(acceptCookieButton));
+			WebElement cookieButton = wait.until(ExpectedConditions.elementToBeClickable(acceptCookieButton));
+			cookieButton.click();
+			wait.until(ExpectedConditions.invisibilityOfElementLocated(acceptCookieButton));
 		} catch (Exception ignored) {
 		}
 	}
@@ -45,16 +55,18 @@ public class HomePage extends BasePage {
 		driver.findElement(loginButton).click();
 	}
 
+	public String getExpectedCopyrightText() {
+		return COPYRIGHT_TEXT;
+	}
+
 	public String getCopyrightText() {
 		return driver.findElement(copyrightText).getText();
 	}
 
 	public void openListOfThemes() {
-		WebDriverWait wait5sec = new WebDriverWait(driver, Duration.ofSeconds(5));
-		WebElement themeBtn = wait5sec.until(ExpectedConditions.presenceOfElementLocated(themeToggleBtn));
-
-		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", themeBtn);
-		((JavascriptExecutor) driver).executeScript("arguments[0].click();", themeBtn);
+		WebElement themeButton = wait.until(ExpectedConditions.presenceOfElementLocated(themeToggleBtn));
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", themeButton);
+		((JavascriptExecutor) driver).executeScript("arguments[0].click();", themeButton);
 	}
 
 	private By getThemeButton(String theme) {
@@ -66,22 +78,37 @@ public class HomePage extends BasePage {
 		};
 	}
 
-	public String chooseTheme(String theme) {
+	public void chooseTheme(String theme) {
 		By themeButton = getThemeButton(theme);
-
 		openListOfThemes();
-		WebElement themeOption = wait.until(ExpectedConditions.presenceOfElementLocated(themeButton));
+		WebElement themeOption = wait.until(ExpectedConditions.elementToBeClickable(themeButton));
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", themeOption);
-		return theme.toLowerCase();
 	}
 
 	public boolean isThemeActive(String theme) {
 		By themeButton = getThemeButton(theme);
 		String ariaPressed = driver.findElement(themeButton).getAttribute("aria-pressed");
+		return ariaPressed.equals("true");
+	}
 
-		if (ariaPressed.equals("true")) {
-			return true;
-		}
-		return false;
+	public List<String> getNavigationItems() {
+		return NAVIGATION_ITEMS;
+	}
+
+	private By getNavItemLocator(String item) {
+		return switch (item.toLowerCase()) {
+			case "объявления" -> adsNavLink;
+			case "сервисы" -> servicesNavLink;
+			case "журнал" -> newsNavLink;
+			case "знания" -> knowledgeNavLink;
+			case "услуги" -> paidServicesNavLink;
+			case "проверка vin" -> vinCheckNavLink;
+			default -> throw new IllegalArgumentException("Unknown navigation item: " + item);
+		};
+	}
+
+	public boolean isNavigationItemDisplayed(String item) {
+		By locator = getNavItemLocator(item);
+		return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).isDisplayed();
 	}
 }

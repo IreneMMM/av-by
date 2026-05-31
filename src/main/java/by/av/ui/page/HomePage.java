@@ -111,4 +111,8 @@ public class HomePage extends BasePage {
 		By locator = getNavItemLocator(item);
 		return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).isDisplayed();
 	}
+
+	public void clickVinCheckNavLink(){
+		driver.findElement(vinCheckNavLink).click();
+	}
 }

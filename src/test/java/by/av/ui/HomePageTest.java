@@ -1,5 +1,6 @@
 package by.av.ui;
 
+import by.av.ui.driver.Driver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,5 +50,19 @@ public class HomePageTest extends BaseTest {
 		for (String navItem : homePage.getNavigationItems()) {
 			Assertions.assertTrue(homePage.isNavigationItemDisplayed(navItem), navItem + " is not displayed");
 		}
+	}
+
+	@Test
+	@DisplayName("Check vin check page is opened")
+	public void testVinCheckPageIsOpened() {
+		homePage.clickVinCheckNavLink();
+		Assertions.assertEquals("https://av.by/vin", Driver.getDriver().getCurrentUrl());
+	}
+
+	@Test
+	@DisplayName("Check login slider is opened if unauthorized user click 'Подать объявление'")
+	public void testLoginSliderOpenedIfUnauthUser() {
+		homePage.clickSubmitAdButton();
+		Assertions.assertTrue(homePage.isLoginSliderOpened(), "Login slider was not opened!");
 	}
 }

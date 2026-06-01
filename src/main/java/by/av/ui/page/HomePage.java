@@ -28,6 +28,8 @@ public class HomePage extends BasePage {
 	private final By darkThemeButton = By.xpath("//button[contains(@class,\"theme__button--dark\")]");
 	private final By lightThemeButton = By.xpath("//button[contains(@class,\"theme__button--light\")]");
 	private final By autoThemeButton = By.xpath("//button[contains(@class,\"theme__button--auto\")]");
+	private final By loginSlider = By.xpath("//div[@class=\"drawer__slide drawer__slide--active\"]");
+
 
 
 	public HomePage() {
@@ -40,15 +42,6 @@ public class HomePage extends BasePage {
 
 	public void refreshPage() {
 		driver.navigate().refresh();
-	}
-
-	public void acceptCookies() {
-		try {
-			WebElement cookieButton = wait.until(ExpectedConditions.elementToBeClickable(acceptCookieButton));
-			cookieButton.click();
-			wait.until(ExpectedConditions.invisibilityOfElementLocated(acceptCookieButton));
-		} catch (Exception ignored) {
-		}
 	}
 
 	public void clickLoginButton() {
@@ -112,7 +105,15 @@ public class HomePage extends BasePage {
 		return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).isDisplayed();
 	}
 
-	public void clickVinCheckNavLink(){
+	public void clickVinCheckNavLink() {
 		driver.findElement(vinCheckNavLink).click();
+	}
+
+	public void clickSubmitAdButton() {
+		driver.findElement(submitAdButton).click();
+	}
+
+	public boolean isLoginSliderOpened() {
+		return wait.until(ExpectedConditions.visibilityOfElementLocated(loginSlider)).isDisplayed();
 	}
 }

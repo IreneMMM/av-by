@@ -2,43 +2,52 @@ package by.av.ui;
 
 import by.av.ui.driver.Driver;
 import by.av.ui.page.CheckVinPage;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
+import org.junit.jupiter.api.*;
 
 public class CheckVinPageTest extends BaseTest {
+	CheckVinPage checkVinPage;
 
-	@DisplayName("Check ")
-	@Test
-	public void test1() {
-		homePage.clickVinCheckNavLink();
-		CheckVinPage checkVinPage = new CheckVinPage();
-		//обавить генирацию рандом винпаге
-		checkVinPage.fillVinInput("00000000000000000");
-		checkVinPage.clickCheckVinButton();
-		String currentUrl = Driver.getDriver().getCurrentUrl();
-		String expectedUrlPart = "https://av.by/vin/prereport/";
-		Assertions.assertTrue(currentUrl.contains(expectedUrlPart),
-				"Переход на страницу предотчета не произошел. Текущий URL: " + currentUrl);
-
+	@BeforeEach
+	@Override
+	public void setup() {
+		initDriver();
+		checkVinPage = new CheckVinPage();
+		checkVinPage.openVinPage();
+		acceptCookies();
 	}
 
-
+	@DisplayName("Check navigation to pre-report page with VIN in URL when valid VIN is entered")
 	@Test
-	public void test() {
-		homePage.clickVinCheckNavLink();
-		CheckVinPage checkVinPage = new CheckVinPage();
-		checkVinPage.fillVinInput("00000000000000000");
+	public void testNavigateToPreReportPageWhenVinIsValid() {
+		String vinValid = "00000000000000000";
+		checkVinPage.fillVinInput(vinValid);
 		checkVinPage.clickCheckVinButton();
-		String expectedUrlPart = "https://av.by/vin/prereport/";
-		WebDriverWait wait = new WebDriverWait(Driver.getDriver(), Duration.ofSeconds(10));
-		boolean isUrlCorrect = wait.until(ExpectedConditions.urlContains(expectedUrlPart));
-		Assertions.assertTrue(isUrlCorrect,
-				"Переход на страницу предотчета не произошел за 10 секунд. Текущий URL: "
-						+ Driver.getDriver().getCurrentUrl());
+		String currentUrl = checkVinPage.waitForPreReportPage();
+		Assertions.assertTrue(currentUrl.contains(checkVinPage.getExpectedUrlPart()), "URL is not correct");
+		Assertions.assertTrue(currentUrl.contains(vinValid), "Vin code is incorrect");
+	}
+
+	@DisplayName("Check error message when VIN less 17 chars is entered")
+	@Test
+	public void testErrorMessageWhenVinIsInvalid() {
+		String vinInvalid = "5654646346363563";
+		checkVinPage.fillVinInput(vinInvalid);
+		checkVinPage.clickCheckVinButton();
+		String actualErrorMessage = checkVinPage.getTextVinErrorMessage();
+		Assertions.assertEquals(checkVinPage.getVinErrorMessageShortVin(), actualErrorMessage);
+	}
+
+	@DisplayName("Check 'where find VIN image' is displayed")
+	@Test
+	public void testWhereFindVinImageIsDisplayed() {
+		checkVinPage.openImageWhereFindVin();
+		Assertions.assertEquals("Где найти VIN", checkVinPage.getTextWhereFindVinTitle());
+	}
+
+	@DisplayName("Check example report opens after click on VIN page")
+	@Test
+	void testExampleReportIsOpened() {
+		checkVinPage.clickExampleReportLink();
+		Assertions.assertEquals(checkVinPage.getExampleReportUrl(), Driver.getDriver().getCurrentUrl());
 	}
 }

@@ -1,13 +1,20 @@
 package by.av.ui.page;
 
 import by.av.ui.driver.Driver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
 public class BasePage {
-	protected final Duration DEFAULT_WAIT = Duration.ofSeconds(10);
+	protected static final Duration DEFAULT_WAIT = Duration.ofSeconds(10);
+
+	private static final By ACCEPT_COOKIE_BUTTON = By.xpath(
+			"//button[@class=\"button button--primary button--block button--large\"]");
 
 	protected WebDriver driver;
 	protected WebDriverWait wait;
@@ -15,5 +22,16 @@ public class BasePage {
 	protected BasePage() {
 		this.driver = Driver.getDriver();
 		this.wait = new WebDriverWait(driver, DEFAULT_WAIT);
+	}
+
+	public static void acceptCookiesIfPresent() {
+		WebDriver driver = Driver.getDriver();
+		WebDriverWait wait = new WebDriverWait(driver, DEFAULT_WAIT);
+		try {
+			WebElement cookieButton = wait.until(ExpectedConditions.elementToBeClickable(ACCEPT_COOKIE_BUTTON));
+			cookieButton.click();
+			wait.until(ExpectedConditions.invisibilityOfElementLocated(ACCEPT_COOKIE_BUTTON));
+		} catch (TimeoutException ignored) {
+		}
 	}
 }

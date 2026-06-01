@@ -26,7 +26,6 @@ public class CheckVinPage extends BasePage {
 	}
 
 	public void fillVinInput(String vinCode){
-
 		WebElement vin = wait.until(ExpectedConditions.visibilityOfElementLocated(vinInput));
 		vin.sendKeys(vinCode);
 	}

@@ -35,10 +35,12 @@ public class HomePageTest extends BaseTest {
 	@Test
 	@DisplayName("Check theme is changed from one to another")
 	public void testThemeIsChanged() {
-		String selectedTheme = "dark";
-		homePage.chooseTheme(selectedTheme);
-		homePage.refreshPage();
-		Assertions.assertTrue(homePage.isThemeActive(selectedTheme), "Dark theme is not saved");
+		String firstTheme = "dark";
+		String secondTheme = "light";
+		homePage.chooseTheme(firstTheme);
+		Assertions.assertTrue(homePage.isThemeActive(firstTheme), firstTheme + "theme is not saved");
+		homePage.chooseTheme(secondTheme);
+		Assertions.assertTrue(homePage.isThemeActive(secondTheme), secondTheme + "theme is not saved");
 	}
 
 	@Test

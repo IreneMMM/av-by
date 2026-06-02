@@ -9,12 +9,7 @@ import java.util.List;
 
 public class HomePage extends BasePage {
 	private static final String BASE_URL = "https://av.by/";
-	private static final String COPYRIGHT_TEXT = "© 2001, ООО «Автоклассифайд», УНП 192787977, Минск, ул. Платонова, 20б, пом. 145";
-	private static final List<String> NAVIGATION_ITEMS = List.of(
-			"Объявления", "Сервисы", "Журнал", "Знания", "Услуги", "Проверка VIN"
-	);
 
-	private final By acceptCookieButton = By.xpath("//button[@class=\"button button--primary button--block button--large\"]");
 	private final By copyrightText = By.xpath("//div[@class='footer__copy']");
 	private final By adsNavLink = By.xpath("//nav//a[.//span[text()='Объявления']]");
 	private final By servicesNavLink = By.xpath("//nav//a[.//span[text()='Сервисы']]");
@@ -29,8 +24,6 @@ public class HomePage extends BasePage {
 	private final By lightThemeButton = By.xpath("//button[contains(@class,\"theme__button--light\")]");
 	private final By autoThemeButton = By.xpath("//button[contains(@class,\"theme__button--auto\")]");
 	private final By loginSlider = By.xpath("//div[@class=\"drawer__slide drawer__slide--active\"]");
-
-
 
 	public HomePage() {
 		super();
@@ -48,18 +41,14 @@ public class HomePage extends BasePage {
 		driver.findElement(loginButton).click();
 	}
 
-	public String getExpectedCopyrightText() {
-		return COPYRIGHT_TEXT;
-	}
-
 	public String getCopyrightText() {
 		return driver.findElement(copyrightText).getText();
 	}
 
 	public void openListOfThemes() {
 		WebElement themeButton = wait.until(ExpectedConditions.presenceOfElementLocated(themeToggleBtn));
-		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", themeButton);
-		((JavascriptExecutor) driver).executeScript("arguments[0].click();", themeButton);
+		scrollToElement(themeButton);
+		jsClick(themeButton);
 	}
 
 	private By getThemeButton(String theme) {
@@ -75,17 +64,13 @@ public class HomePage extends BasePage {
 		By themeButton = getThemeButton(theme);
 		openListOfThemes();
 		WebElement themeOption = wait.until(ExpectedConditions.elementToBeClickable(themeButton));
-		((JavascriptExecutor) driver).executeScript("arguments[0].click();", themeOption);
+		jsClick(themeOption);
 	}
 
 	public boolean isThemeActive(String theme) {
 		By themeButton = getThemeButton(theme);
 		String ariaPressed = driver.findElement(themeButton).getAttribute("aria-pressed");
 		return ariaPressed.equals("true");
-	}
-
-	public List<String> getNavigationItems() {
-		return NAVIGATION_ITEMS;
 	}
 
 	private By getNavItemLocator(String item) {

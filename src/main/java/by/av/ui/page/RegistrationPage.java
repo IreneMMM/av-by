@@ -6,7 +6,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class RegistrationPage extends BasePage {
 	private final By registrationButton = By.xpath("//span[contains(text(),\"Регистрация\")]");
-	private final By registrationByEmail = By.xpath("//div[@class=\"drawer__slide drawer__slide--active\"]" + "//button[contains(text(),\"почте\")]");
+	private final By registrationByEmailButton = By.xpath("//div[@class=\"drawer__slide drawer__slide--active\"]" + "//button[contains(text(),\"почте\")]");
 	private final By nameInput = By.xpath("//input[@id=\"name\"]");
 	private final By emailInput = By.xpath("//input[@id=\"regEmail\"]");
 	private final By passwordInput = By.xpath("//input[@id=\"regPassword\"]");
@@ -27,12 +27,11 @@ public class RegistrationPage extends BasePage {
 	}
 
 	public void clickRegistrationButton() {
-		WebElement regButton = wait.until(ExpectedConditions.elementToBeClickable(registrationButton));
-		regButton.click();
+		wait.until(ExpectedConditions.elementToBeClickable(registrationButton)).click();
 	}
 
 	public void clickRegistrationByEmail() {
-		driver.findElement(registrationByEmail).click();
+		wait.until(ExpectedConditions.elementToBeClickable(registrationByEmailButton)).click();
 	}
 
 	public void setNameInput(String name) {
@@ -45,6 +44,17 @@ public class RegistrationPage extends BasePage {
 
 	public void setPasswordInput(String pass) {
 		driver.findElement(passwordInput).sendKeys(pass);
+	}
+
+	public void getRegistrationForm() {
+		clickRegistrationButton();
+		clickRegistrationByEmail();
+	}
+
+	public void fillRegistrationForm(String name, String email, String pass) {
+		setNameInput(name);
+		setEmailInput(email);
+		setPasswordInput(pass);
 	}
 
 	public void clickSubmitButton() {

@@ -16,23 +16,12 @@ public class CheckVinPage extends BasePage {
 	private final By whereFindVinTitle = By.xpath("//div[@class=\"modal__dialog modal__dialog--find-vin\"]//div[@class=\"modal__title\"]");
 	private final By whereFindVinCloseButton = By.xpath("//div[div[text()=\"Где найти VIN\"]]//button[@class=\"modal__close\"]");
 
-	private final String expectedUrlPart = "https://av.by/vin/prereport/";
-	private final String vinErrorMessageShortVin = "VIN-номер состоит из 17 символов";
-
-	public CheckVinPage() {
+    public CheckVinPage() {
 		super();
 	}
 
 	public void openVinPage() {
 		driver.get(CHECK_VIN_PAGE_URL);
-	}
-
-	public String getExpectedUrlPart() {
-		return expectedUrlPart;
-	}
-
-	public String getVinErrorMessageShortVin() {
-		return vinErrorMessageShortVin;
 	}
 
 	public String getExampleReportUrl() {

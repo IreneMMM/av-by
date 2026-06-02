@@ -1,10 +1,7 @@
 package by.av.ui.page;
 
 import by.av.ui.driver.Driver;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -33,5 +30,13 @@ public class BasePage {
 			wait.until(ExpectedConditions.invisibilityOfElementLocated(ACCEPT_COOKIE_BUTTON));
 		} catch (TimeoutException ignored) {
 		}
+	}
+
+	protected void scrollToElement(WebElement element) {
+		((JavascriptExecutor) driver).executeScript(
+				"arguments[0].scrollIntoView({block: 'center'});", element);
+	}
+	protected void jsClick(WebElement element) {
+		((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
 	}
 }

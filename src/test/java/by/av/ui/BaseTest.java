@@ -22,8 +22,6 @@ public abstract class BaseTest {
 	@BeforeEach
 	public void setup() {
 		initDriver();
-		homePage = new HomePage();
-		homePage.open();
 		acceptCookies();
 	}
 

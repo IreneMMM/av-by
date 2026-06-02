@@ -10,20 +10,19 @@ public class CheckVinPageTest extends BaseTest {
 	@BeforeEach
 	@Override
 	public void setup() {
-		initDriver();
 		checkVinPage = new CheckVinPage();
 		checkVinPage.openVinPage();
-		acceptCookies();
 	}
 
 	@DisplayName("Check navigation to pre-report page with VIN in URL when valid VIN is entered")
 	@Test
 	public void testNavigateToPreReportPageWhenVinIsValid() {
 		String vinValid = "00000000000000000";
+		String reportPageUrl = "https://av.by/vin/prereport/";
 		checkVinPage.fillVinInput(vinValid);
 		checkVinPage.clickCheckVinButton();
 		String currentUrl = checkVinPage.waitForPreReportPage();
-		Assertions.assertTrue(currentUrl.contains(checkVinPage.getExpectedUrlPart()), "URL is not correct");
+		Assertions.assertTrue(currentUrl.contains(reportPageUrl), "URL is not correct");
 		Assertions.assertTrue(currentUrl.contains(vinValid), "Vin code is incorrect");
 	}
 
@@ -31,10 +30,10 @@ public class CheckVinPageTest extends BaseTest {
 	@Test
 	public void testErrorMessageWhenVinIsInvalid() {
 		String vinInvalid = "5654646346363563";
+		String vinErrorMessageShortVin = "VIN-номер состоит из 17 символов";
 		checkVinPage.fillVinInput(vinInvalid);
 		checkVinPage.clickCheckVinButton();
-		String actualErrorMessage = checkVinPage.getTextVinErrorMessage();
-		Assertions.assertEquals(checkVinPage.getVinErrorMessageShortVin(), actualErrorMessage);
+		Assertions.assertEquals(vinErrorMessageShortVin, checkVinPage.getTextVinErrorMessage());
 	}
 
 	@DisplayName("Check 'where find VIN image' is displayed")

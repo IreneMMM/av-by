@@ -3,7 +3,6 @@ package by.av.ui.page;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
@@ -29,20 +28,17 @@ public class SearchFilterPage extends BasePage {
 
 	public void selectBrand(String brand) {
 		log.info("Selecting brand: {}", brand);
-		WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(brandDropdown));
-		dropdown.click();
+		clickWhenReady(brandDropdown);
 
 		By brandOption = By.xpath(
 				"//div[contains(@class,'filter-models')]//button[contains(@class,'dropdown__listbutton') and normalize-space(text())='"
 						+ brand + "']");
-		WebElement option = wait.until(ExpectedConditions.elementToBeClickable(brandOption));
-		option.click();
+		clickWhenReady(brandOption);
 	}
 
 	public void clickShowListingsButton() {
 		log.info("Clicking show listings button");
-		WebElement button = wait.until(ExpectedConditions.elementToBeClickable(showListingsButton));
-		button.click();
+		clickWhenReady(showListingsButton);
 	}
 
 	public void waitForResultsLoaded(String brand) {

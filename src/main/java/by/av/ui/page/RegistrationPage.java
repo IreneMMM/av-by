@@ -4,6 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class RegistrationPage extends BasePage {
 	private static final Logger log = LogManager.getLogger(RegistrationPage.class);
@@ -68,11 +71,12 @@ public class RegistrationPage extends BasePage {
 
 	public void clickSubmitButton() {
 		log.info("Submitting registration form");
-		driver.findElement(submitButton).click();
+		clickWhenReady(submitButton);
 	}
 
 	public String getEmailSubmitTitle() {
-		String title = wait.until(ExpectedConditions.visibilityOfElementLocated(emailSubmitTitle)).getText();
+		WebDriverWait extendedWait = new WebDriverWait(driver, Duration.ofSeconds(30));
+		String title = extendedWait.until(ExpectedConditions.visibilityOfElementLocated(emailSubmitTitle)).getText();
 		log.info("Registration confirmation title: {}", title);
 		return title;
 	}

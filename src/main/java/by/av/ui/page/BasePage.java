@@ -41,7 +41,14 @@ public class BasePage {
 		((JavascriptExecutor) driver).executeScript(
 				"arguments[0].scrollIntoView({block: 'center'});", element);
 	}
+
 	protected void jsClick(WebElement element) {
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+	}
+
+	protected void clickWhenReady(By locator) {
+		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+		scrollToElement(element);
+		jsClick(element);
 	}
 }

@@ -108,7 +108,7 @@ public class HomePage extends BasePage {
 
 	public void clickSubmitAdButton() {
 		log.info("Clicking submit ad button");
-		driver.findElement(submitAdButton).click();
+		clickWhenReady(submitAdButton);
 	}
 
 	public boolean isLoginSliderOpened() {

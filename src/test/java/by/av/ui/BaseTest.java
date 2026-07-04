@@ -3,6 +3,7 @@ package by.av.ui;
 import by.av.ui.driver.Driver;
 import by.av.ui.page.BasePage;
 import by.av.ui.page.HomePage;
+import io.qameta.allure.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
@@ -21,10 +22,12 @@ public abstract class BaseTest {
 		driver = Driver.getDriver();
 	}
 
+	@Step("Accept cookies")
 	protected void acceptCookies() {
 		BasePage.acceptCookiesIfPresent();
 	}
 
+	@Step("Open homepage")
 	protected void openHomePage() {
 		homePage = new HomePage();
 		homePage.open();

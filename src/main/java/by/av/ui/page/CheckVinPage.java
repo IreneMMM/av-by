@@ -1,6 +1,7 @@
 package by.av.ui.page;
 
 import by.av.ui.driver.Driver;
+import io.qameta.allure.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -19,12 +20,12 @@ public class CheckVinPage extends BasePage {
 	private final By whereFindVinTitle = By.xpath("//div[@class=\"modal__dialog modal__dialog--find-vin\"]//div[@class=\"modal__title\"]");
 	private final By whereFindVinCloseButton = By.xpath("//div[div[text()=\"Где найти VIN\"]]//button[@class=\"modal__close\"]");
 
-    public CheckVinPage() {
+	public CheckVinPage() {
 		super();
 	}
 
+	@Step("Open VIN check page: " + CHECK_VIN_PAGE_URL)
 	public void openVinPage() {
-		log.info("Opening VIN check page: {}", CHECK_VIN_PAGE_URL);
 		driver.get(CHECK_VIN_PAGE_URL);
 	}
 
@@ -32,26 +33,27 @@ public class CheckVinPage extends BasePage {
 		return EXAMPLE_REPORT_URL;
 	}
 
+	@Step("Wait for pre-report page")
 	public String waitForPreReportPage() {
 		wait.until(ExpectedConditions.urlContains("/vin/prereport/"));
 		String currentUrl = Driver.getDriver().getCurrentUrl();
-		log.info("Pre-report page opened: {}", currentUrl);
+		log.info("Pre-report page URL: {}", currentUrl);
 		return currentUrl;
 	}
 
+	@Step("Submit VIN check")
 	public void clickCheckVinButton() {
-		log.info("Submitting VIN check");
 		wait.until(ExpectedConditions.elementToBeClickable(checkVinButton)).click();
 	}
 
+	@Step("Enter VIN: {vinCode}")
 	public void fillVinInput(String vinCode) {
-		log.info("Entering VIN: {}", vinCode);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(vinInput)).sendKeys(vinCode);
 	}
 
 	//можно ли по-другому обработать открытие ссылки в новом окне?
+	@Step("Open VIN example report")
 	public void clickExampleReportLink() {
-		log.info("Opening VIN example report");
 		String originalWindow = driver.getWindowHandle();
 		wait.until(ExpectedConditions.elementToBeClickable(exampleReportLink)).click();
 		wait.until(ExpectedConditions.numberOfWindowsToBe(2));
@@ -62,25 +64,27 @@ public class CheckVinPage extends BasePage {
 			}
 		}
 		wait.until(ExpectedConditions.urlContains("/vin/example"));
-		log.info("Example report opened: {}", driver.getCurrentUrl());
+		log.info("Example report URL: {}", driver.getCurrentUrl());
 	}
 
+	@Step("Open 'where find VIN' image")
 	public void openImageWhereFindVin() {
-		log.info("Opening 'where find VIN' image");
 		wait.until(ExpectedConditions.elementToBeClickable(whereFindVinButton)).click();
 	}
 
+	@Step("Close 'where find VIN' image")
 	public void closeImageWhereFindVin() {
-		log.info("Closing 'where find VIN' image");
 		driver.findElement(whereFindVinCloseButton).click();
 	}
 
+	@Step("Get VIN error message")
 	public String getTextVinErrorMessage() {
 		String message = wait.until(ExpectedConditions.visibilityOfElementLocated(vinErrorMessage)).getText();
 		log.info("VIN error message: {}", message);
 		return message;
 	}
 
+	@Step("Get 'where find VIN' title")
 	public String getTextWhereFindVinTitle() {
 		String title = wait.until(ExpectedConditions.visibilityOfElementLocated(whereFindVinTitle)).getText();
 		log.info("'Where find VIN' title: {}", title);

@@ -1,6 +1,7 @@
 package by.av.ui.page;
 
 import by.av.ui.driver.Driver;
+import io.qameta.allure.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
@@ -24,6 +25,7 @@ public class BasePage {
 		this.wait = new WebDriverWait(driver, DEFAULT_WAIT);
 	}
 
+	@Step("Accept cookies if present")
 	public static void acceptCookiesIfPresent() {
 		WebDriver driver = Driver.getDriver();
 		WebDriverWait wait = new WebDriverWait(driver, DEFAULT_WAIT);

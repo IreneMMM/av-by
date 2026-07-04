@@ -1,5 +1,6 @@
 package by.av.ui.page;
 
+import io.qameta.allure.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -16,7 +17,6 @@ public class LoginPage extends BasePage {
 	private final By forgetPasswordButton = By.xpath("//button[contains(text(), \"Не помню пароль\")]");
 	private final By submitButton = By.xpath("//button[@class=\"button button--action\"]");
 	private final By errorMessage = By.xpath("//div[@class=\"error-message\"]");
-	//private final By userMenu = By.xpath("//ul[@class=\"nav__personal\"]");
 	private final By recoveryPasswordTitle = By.xpath("//div[contains(text(),\"Запрос на восстановление пароля\")]");
 	private final By recoveryPasswordSubmitButton = By.xpath("//div[@aria-labelledby=\"почте\"]//button[contains(text(),\"Отправить\")]");
 	private final By recoveryPasswordEmailInput = By.xpath("//input[@id=\"email\"]");
@@ -38,67 +38,69 @@ public class LoginPage extends BasePage {
 		return button;
 	}
 
+	@Step("Select login by email or login")
 	public void clickLoginByEmailButton() {
-		log.info("Selecting login by email or login");
 		wait.until(ExpectedConditions.elementToBeClickable(loginByEmailButton)).click();
 	}
 
+	@Step("Select password recovery by email")
 	public void clickRecoveryPasswordByEmailButton() {
-		log.info("Selecting password recovery by email");
 		wait.until(ExpectedConditions.elementToBeClickable(recoveryPasswordByEmailButton)).click();
 	}
 
+	@Step("Enter login: {email}")
 	public void setEmailOrLoginInput(String email) {
-		log.info("Entering login: {}", email);
 		wait.until(ExpectedConditions.elementToBeClickable(emailOrLoginInput)).sendKeys(email);
 	}
 
+	@Step("Enter password: {pass}")
 	public void setPasswordInput(String pass) {
-		log.info("Entering password: {}", pass);
 		driver.findElement(passwordInput).sendKeys(pass);
 	}
 
+	@Step("Enter recovery email: {email}")
 	public void setRecoveryPasswordEmailInput(String email) {
-		log.info("Entering recovery email: {}", email);
 		driver.findElement(recoveryPasswordEmailInput).sendKeys(email);
 	}
 
+	@Step("Submit login form")
 	public void clickSubmitButton() {
-		log.info("Submitting login form");
 		driver.findElement(submitButton).click();
 	}
 
+	@Step("Submit recovery password form")
 	public void clickRecoveryPasswordSubmitButton() {
-		log.info("Submitting recovery password form");
 		driver.findElement(recoveryPasswordSubmitButton).click();
 	}
 
+	@Step("Clear login input")
 	public void clearEmailOrLoginInput() {
-		log.info("Clearing login input");
 		wait.until(ExpectedConditions.elementToBeClickable(emailOrLoginInput)).clear();
 	}
 
+	@Step("Clear password input")
 	public void clearPasswordInput() {
-		log.info("Clearing password input");
 		wait.until(ExpectedConditions.elementToBeClickable(passwordInput)).clear();
 	}
 
+	@Step("Open password recovery form")
 	public void clickForgetPasswordButton() {
-		log.info("Opening password recovery form");
 		wait.until(ExpectedConditions.elementToBeClickable(forgetPasswordButton)).click();
 	}
 
+	@Step("Toggle password visibility")
 	public void clickShowPasswordButton() {
-		log.info("Toggling password visibility");
 		driver.findElement(showPasswordButton).click();
 	}
 
+	@Step("Get login error message")
 	public String getErrorMessage() {
 		String message = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText();
 		log.info("Login error message: {}", message);
 		return message;
 	}
 
+	@Step("Get recovery password title")
 	public String getRecoveryPasswordTitle() {
 		String title = wait.until(ExpectedConditions.visibilityOfElementLocated(recoveryPasswordTitle)).getText().trim();
 		log.info("Recovery password title: {}", title);

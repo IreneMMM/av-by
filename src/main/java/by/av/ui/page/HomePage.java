@@ -1,5 +1,6 @@
 package by.av.ui.page;
 
+import io.qameta.allure.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -29,21 +30,22 @@ public class HomePage extends BasePage {
 		super();
 	}
 
+	@Step("Open homepage: " + BASE_URL)
 	public void open() {
-		log.info("Opening homepage: {}", BASE_URL);
 		driver.get(BASE_URL);
 	}
 
+	@Step("Refresh homepage")
 	public void refreshPage() {
-		log.info("Refreshing homepage");
 		driver.navigate().refresh();
 	}
 
+	@Step("Open login form")
 	public void clickLoginButton() {
-		log.info("Opening login form");
 		driver.findElement(loginButton).click();
 	}
 
+	@Step("Get copyright text")
 	public String getCopyrightText() {
 		String text = driver.findElement(copyrightText).getText();
 		log.info("Footer copyright text: {}", text);
@@ -51,7 +53,6 @@ public class HomePage extends BasePage {
 	}
 
 	public void openListOfThemes() {
-		log.info("Opening theme selector");
 		WebElement themeButton = wait.until(ExpectedConditions.presenceOfElementLocated(themeToggleBtn));
 		scrollToElement(themeButton);
 		jsClick(themeButton);
@@ -66,19 +67,20 @@ public class HomePage extends BasePage {
 		};
 	}
 
+	@Step("Choose theme: {theme}")
 	public void chooseTheme(String theme) {
 		By themeButton = getThemeButton(theme);
 		openListOfThemes();
 		WebElement themeOption = wait.until(ExpectedConditions.elementToBeClickable(themeButton));
-		log.info("Selecting theme: {}", theme);
 		jsClick(themeOption);
 	}
 
+	@Step("Check theme is active: {theme}")
 	public boolean isThemeActive(String theme) {
 		By themeButton = getThemeButton(theme);
 		String ariaPressed = driver.findElement(themeButton).getAttribute("aria-pressed");
 		boolean active = ariaPressed.equals("true");
-		log.info("Theme '{}' active status: {}", theme, active);
+		log.info("Theme '{}' active: {}", theme, active);
 		return active;
 	}
 
@@ -94,6 +96,7 @@ public class HomePage extends BasePage {
 		};
 	}
 
+	@Step("Check navigation item displayed: {item}")
 	public boolean isNavigationItemDisplayed(String item) {
 		By locator = getNavItemLocator(item);
 		boolean displayed = wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).isDisplayed();
@@ -101,16 +104,17 @@ public class HomePage extends BasePage {
 		return displayed;
 	}
 
+	@Step("Navigate to VIN check page")
 	public void clickVinCheckNavLink() {
-		log.info("Navigating to VIN check page");
 		driver.findElement(vinCheckNavLink).click();
 	}
 
+	@Step("Click submit ad button")
 	public void clickSubmitAdButton() {
-		log.info("Clicking submit ad button");
 		clickWhenReady(submitAdButton);
 	}
 
+	@Step("Check login slider is opened")
 	public boolean isLoginSliderOpened() {
 		boolean opened = wait.until(ExpectedConditions.visibilityOfElementLocated(loginSlider)).isDisplayed();
 		log.info("Login slider opened: {}", opened);

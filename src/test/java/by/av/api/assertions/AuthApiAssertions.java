@@ -1,6 +1,7 @@
 package by.av.api.assertions;
 
 import by.av.api.auth.AuthApiService;
+import io.qameta.allure.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +17,7 @@ public final class AuthApiAssertions {
 	private AuthApiAssertions() {
     }
 
+    @Step("Verify response: status={expectedStatusCode}, message={expectedMessage}")
     public static void assertResponse(
             AuthApiService authApiService,
             int expectedStatusCode,
@@ -32,6 +34,7 @@ public final class AuthApiAssertions {
         );
     }
 
+    @Step("Verify response with login error: status={expectedStatusCode}, loginError={expectedLoginError}")
     public static void assertResponse(
             AuthApiService authApiService,
             int expectedStatusCode,

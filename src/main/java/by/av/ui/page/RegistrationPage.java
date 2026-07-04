@@ -1,10 +1,12 @@
 package by.av.ui.page;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class RegistrationPage extends BasePage {
+	private static final Logger log = LogManager.getLogger(RegistrationPage.class);
 	private final By registrationButton = By.xpath("//span[contains(text(),\"Регистрация\")]");
 	private final By registrationByEmailButton = By.xpath("//div[@class=\"drawer__slide drawer__slide--active\"]" + "//button[contains(text(),\"почте\")]");
 	private final By nameInput = By.xpath("//input[@id=\"name\"]");
@@ -27,54 +29,70 @@ public class RegistrationPage extends BasePage {
 	}
 
 	public void clickRegistrationButton() {
+		log.info("Opening registration form");
 		wait.until(ExpectedConditions.elementToBeClickable(registrationButton)).click();
 	}
 
 	public void clickRegistrationByEmail() {
+		log.info("Selecting registration by email");
 		wait.until(ExpectedConditions.elementToBeClickable(registrationByEmailButton)).click();
 	}
 
 	public void setNameInput(String name) {
+		log.info("Entering registration name: {}", name);
 		driver.findElement(nameInput).sendKeys(name);
 	}
 
 	public void setEmailInput(String email) {
+		log.info("Entering registration email: {}", email);
 		driver.findElement(emailInput).sendKeys(email);
 	}
 
 	public void setPasswordInput(String pass) {
+		log.info("Entering registration password: {}", pass);
 		driver.findElement(passwordInput).sendKeys(pass);
 	}
 
 	public void getRegistrationForm() {
+		log.info("Opening registration form by email");
 		clickRegistrationButton();
 		clickRegistrationByEmail();
 	}
 
 	public void fillRegistrationForm(String name, String email, String pass) {
+		log.info("Filling registration form: name={}, email={}, password={}", name, email, pass);
 		setNameInput(name);
 		setEmailInput(email);
 		setPasswordInput(pass);
 	}
 
 	public void clickSubmitButton() {
+		log.info("Submitting registration form");
 		driver.findElement(submitButton).click();
 	}
 
 	public String getEmailSubmitTitle() {
-		return wait.until(ExpectedConditions.visibilityOfElementLocated(emailSubmitTitle)).getText();
+		String title = wait.until(ExpectedConditions.visibilityOfElementLocated(emailSubmitTitle)).getText();
+		log.info("Registration confirmation title: {}", title);
+		return title;
 	}
 
 	//IN PROGRESS
 	public String getNameErrorMessage() {
-		return driver.findElement(errorMessageNameInput).getText();
+		String message = driver.findElement(errorMessageNameInput).getText();
+		log.info("Registration name error message: {}", message);
+		return message;
 	}
 
 	public String getEmailErrorMessage() {
-		return driver.findElement(errorMessageEmailInput).getText();
+		String message = driver.findElement(errorMessageEmailInput).getText();
+		log.info("Registration email error message: {}", message);
+		return message;
 	}
 
 	public String getPasswordErrorMessage() {
-		return driver.findElement(errorMessagePasswordInput).getText();
+		String message = driver.findElement(errorMessagePasswordInput).getText();
+		log.info("Registration password error message: {}", message);
+		return message;
 	}
 }

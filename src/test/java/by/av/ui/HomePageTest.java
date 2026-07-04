@@ -1,26 +1,23 @@
 package by.av.ui;
 
 import by.av.ui.driver.Driver;
-import by.av.ui.page.CheckVinPage;
-import by.av.ui.page.HomePage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
-
 public class HomePageTest extends BaseTest {
-	HomePage homePage;
 
 	@BeforeEach
 	@Override
-	public void setup() {
-		homePage = new HomePage();
-		homePage.open();
+	public void setup(TestInfo testInfo) {
+		super.setup(testInfo);
+		openHomePage();
 	}
 
 	@DisplayName("Check footer displays expected copyright text")

@@ -1,20 +1,20 @@
 package by.av.ui;
 
-import by.av.ui.page.HomePage;
 import by.av.ui.page.RegistrationPage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 public class RegistrationPageTest extends BaseTest {
 	RegistrationPage registrationPage;
 
 	@BeforeEach
 	@Override
-	public void setup() {
-		homePage = new HomePage();
-		homePage.open();
+	public void setup(TestInfo testInfo) {
+		super.setup(testInfo);
+		openHomePage();
 		homePage.clickLoginButton();
 		registrationPage = new RegistrationPage();
 	}

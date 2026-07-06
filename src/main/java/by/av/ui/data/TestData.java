@@ -27,12 +27,6 @@ public class TestData {
 		return name;
 	}
 
-	public String randomLatinName() {
-		String name = FAKER.name().firstName();
-		log.info("Generated latin name: {}", name);
-		return name;
-	}
-
 	public String strictLengthPassword(int length) {
 		String password = FAKER.internet().password(length, length);
 		log.info("Generated password with length {}: {}", length, password);

@@ -85,11 +85,12 @@ public class SearchFilterPageTest extends BaseTest {
 		searchFilterPage.open();
 		acceptCookies();
 		searchFilterPage.setPriceFrom(String.valueOf(randomMinPrice));
+		searchFilterPage.selectCurrency("USD");
 		searchFilterPage.clickShowResultButton();
-
 		List<Integer> resultPricesByn = searchFilterPage.getResultPrices();
 		assertResultsNotEmpty(resultPricesByn, "price filter");
 		log.info("Received {} prices for minimum price check", resultPricesByn.size());
+
 		assertPricesAboveMinimum(resultPricesByn, minPriceInByn, randomMinPrice);
 	}
 

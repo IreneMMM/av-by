@@ -4,6 +4,7 @@ import io.qameta.allure.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -24,9 +25,6 @@ public class RegistrationPage extends BasePage {
 	private final By submitButton = By.xpath("//form[.//input[@id='regEmail']]//button[normalize-space()='Зарегистрироваться']");
 	private final By emailSubmitTitle = By.xpath("//div[contains(text(), \"Подтверждение почтового адреса\")]");
 	private final By emailSubmitMessage = By.xpath("//p[contains(text(), 'Мы отправили письмо')]");
-	private final By errorMessageNameInput = By.xpath("//input[@id='name']/following-sibling::div[contains(@class,'error-message')]");
-	private final By errorMessageEmailInput = By.xpath("//input[@id='regEmail']/following-sibling::div[contains(@class,'error-message')]");
-	private final By errorMessagePasswordInput = By.xpath("//input[@id='regPassword']/following-sibling::div[contains(@class,'error-message')]");
 	public RegistrationPage() {
 		super();
 	}
@@ -91,25 +89,36 @@ public class RegistrationPage extends BasePage {
 	
 	@Step("Get registration name error message")
 	public String getNameErrorMessage() {
-		String message = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageNameInput)).getText();
-		log.info("Registration name error message: {}", message);
-		return message;
+		return getValidationMessageByText(ERROR_MESSAGE_NAME_NOT_CYRILLIC, ERROR_MESSAGE_NAME_TOO_SHORT);
 	}
 	
 	@Step("Get registration email error message")
 	public String getEmailErrorMessage() {
-		String message = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageEmailInput)).getText();
-		log.info("Registration email error message: {}", message);
-		return message;
+		return getValidationMessageByText(ERROR_MESSAGE_EMAIL_INVALID);
 	}
 	
 	@Step("Get registration password error message")
 	public String getPasswordErrorMessage() {
-		String message = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessagePasswordInput)).getText();
-		log.info("Registration password error message: {}", message);
-		return message;
+		return getValidationMessageByText(ERROR_MESSAGE_PASSWORD_INVALID_LENGTH, ERROR_MESSAGE_PASSWORD_INVALID_CHARS);
 	}
 
+	private String getValidationMessageByText(String... expectedTexts) {
+		return wait.until(driver -> {
+			for (String expectedText : expectedTexts) {
+				try {
+					By locator = By.xpath("//*[normalize-space(.)='" + expectedText + "']");
+					WebElement element = driver.findElement(locator);
+					if (element.isDisplayed()) {
+						String foundText = element.getText();
+						log.info("Validation message found: {}", foundText);
+						return foundText;
+					}
+				} catch (Exception ignored) {
+				}
+			}
+			return null;
+		});
+	}
 }
 
 

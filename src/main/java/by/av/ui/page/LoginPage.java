@@ -44,7 +44,7 @@ public class LoginPage extends BasePage {
 
 	@Step("Select password recovery by email")
 	public void clickRecoveryPasswordByEmailButton() {
-		wait.until(ExpectedConditions.elementToBeClickable(recoveryPasswordByEmailButton)).click();
+		clickWhenReady(recoveryPasswordByEmailButton);
 	}
 
 	@Step("Enter login: {email}")

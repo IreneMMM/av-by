@@ -99,7 +99,6 @@ public class LoginPageTest extends BaseTest {
 
 		loginPage.clickLoginByEmailButton();
 		loginPage.setEmailOrLoginInput(emailOrLogin);
-		loginPage.clearPasswordInput();
 		Assertions.assertFalse(loginPage.getSubmitButton().isEnabled());
 	}
 

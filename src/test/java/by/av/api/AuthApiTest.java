@@ -20,7 +20,7 @@ public class AuthApiTest extends BaseApiTest {
     @DisplayName("Check sign-in returns 400 when credentials are invalid")
     @Test
     public void testSignInWithInvalidCredentials() {
-        authApiService.login(testData.randomEmail(), testData.rangeLengthPassword());
+        authApiService.login(testData.randomEmail(), testData.randomLengthPassword());
         assertResponse(authApiService, BAD_REQUEST, INVALID_SIGN_IN_MESSAGE, INVALID_SIGN_IN_TEXT);
     }
 
@@ -49,7 +49,7 @@ public class AuthApiTest extends BaseApiTest {
     @DisplayName("Check sign-in returns 400 when login key is missing in JSON")
     @Test
     public void testSignInWithMissingLoginKey() {
-        authApiService.loginWithPasswordOnly(testData.rangeLengthPassword());
+        authApiService.loginWithPasswordOnly(testData.randomLengthPassword());
         assertResponse(authApiService, BAD_REQUEST, VALIDATION_FAILED_MESSAGE, VALIDATION_FAILED_TEXT, LOGIN_REQUIRED_ERROR);
     }
 }

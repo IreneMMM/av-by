@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 public final class AuthApiDataProvider {
     private static final TestData testData = new TestData();
     private static final String RANDOM_LOGIN = testData.randomEmail();
-    private static final String RANDOM_PASSWORD = testData.rangeLengthPassword();
+    private static final String RANDOM_PASSWORD = testData.randomLengthPassword();
     private static final String EMPTY_VALUE = "";
     private static final int PASSWORD_MIN_BOUNDARY = 1;
     private static final int PASSWORD_MAX_BOUNDARY = 50;

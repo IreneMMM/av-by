@@ -13,7 +13,6 @@ public class LoginPage extends BasePage {
 	private final By loginByEmailButton = By.xpath("//button[contains(text(),\"почте или логину\")]");
 	private final By emailOrLoginInput = By.xpath("//input[@id=\"authLogin\"]");
 	private final By passwordInput = By.xpath("//input[@id=\"loginPassword\"]");
-	private final By showPasswordButton = By.xpath("//label[@for=\"loginPassword\"]/button");
 	private final By forgetPasswordButton = By.xpath("//button[contains(text(), \"Не помню пароль\")]");
 	private final By submitButton = By.xpath("//button[@class=\"button button--action\"]");
 	private final By errorMessage = By.xpath("//div[@class=\"error-message\"]");
@@ -86,11 +85,6 @@ public class LoginPage extends BasePage {
 	@Step("Open password recovery form")
 	public void clickForgetPasswordButton() {
 		wait.until(ExpectedConditions.elementToBeClickable(forgetPasswordButton)).click();
-	}
-
-	@Step("Toggle password visibility")
-	public void clickShowPasswordButton() {
-		driver.findElement(showPasswordButton).click();
 	}
 
 	@Step("Get login error message")

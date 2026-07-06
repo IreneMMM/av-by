@@ -11,7 +11,7 @@ public class DriverFactory {
 	private static final Logger log = LogManager.getLogger(DriverFactory.class);
 
 	public static WebDriver getDriver() {
-		String browser = System.getProperty("browser", "mozilla").toLowerCase();
+		String browser = System.getProperty("browser", "chrome").toLowerCase();
 		log.info("Opening browser: {}", browser);
 
 		WebDriver webDriver;

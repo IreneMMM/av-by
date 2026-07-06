@@ -11,11 +11,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class BasePage {
-	private static final Logger log = LogManager.getLogger(BasePage.class);
 	protected static final Duration DEFAULT_WAIT = Duration.ofSeconds(10);
-
-	private static final By ACCEPT_COOKIE_BUTTON = By.xpath(
-			"//button[@class=\"button button--primary button--block button--large\"]");
+	private static final Logger log = LogManager.getLogger(BasePage.class);
+	private static final By ACCEPT_COOKIE_BUTTON = By.xpath("//button[@class=\"button button--primary button--block button--large\"]");
 
 	protected WebDriver driver;
 	protected WebDriverWait wait;
@@ -40,8 +38,7 @@ public class BasePage {
 	}
 
 	protected void scrollToElement(WebElement element) {
-		((JavascriptExecutor) driver).executeScript(
-				"arguments[0].scrollIntoView({block: 'center'});", element);
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
 	}
 
 	protected void jsClick(WebElement element) {

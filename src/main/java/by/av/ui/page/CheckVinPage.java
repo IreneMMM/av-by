@@ -18,6 +18,7 @@ public class CheckVinPage extends BasePage {
 	private final By whereFindVinButton = By.xpath("//button[contains(text(),\"Где найти VIN\")]");
 	private final By exampleReportLink = By.xpath("//div[@class=\"vin-main__content\"]//a[contains(text(),\"Пример отчёта\")]");
 	private final By whereFindVinTitle = By.xpath("//div[@class=\"modal__dialog modal__dialog--find-vin\"]//div[@class=\"modal__title\"]");
+
 	public CheckVinPage() {
 		super();
 	}

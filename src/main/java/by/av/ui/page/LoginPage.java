@@ -67,11 +67,6 @@ public class LoginPage extends BasePage {
 		driver.findElement(submitButton).click();
 	}
 
-	@Step("Submit recovery password form")
-	public void clickRecoveryPasswordSubmitButton() {
-		driver.findElement(recoveryPasswordSubmitButton).click();
-	}
-
 	@Step("Clear login input")
 	public void clearEmailOrLoginInput() {
 		wait.until(ExpectedConditions.elementToBeClickable(emailOrLoginInput)).clear();

@@ -35,7 +35,6 @@ public class LoginPageTest extends BaseTest {
 		Assertions.assertTrue(loginPage.getSubmitButton().isEnabled());
 	}
 
-
 	@DisplayName("Check login with invalid email or login")
 	@Test
 	public void testLoginWithInvalidEmailOrLogin() {

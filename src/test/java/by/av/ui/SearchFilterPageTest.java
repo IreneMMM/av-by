@@ -65,7 +65,7 @@ public class SearchFilterPageTest extends BaseTest {
 	@Test
 	public void testResultYearsWithinSelectedRange() {
 		int yearFrom = searchFilterPage.selectYearFrom();
-		int yearTo = searchFilterPage.selectYearTo();
+		int yearTo = searchFilterPage.selectYearToAtLeast(yearFrom);
 
 		log.info("Selected year range: {}-{}", yearFrom, yearTo);
 		searchFilterPage.clickShowResultButton();

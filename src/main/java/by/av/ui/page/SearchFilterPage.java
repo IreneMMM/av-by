@@ -5,7 +5,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 
@@ -14,6 +16,7 @@ public class SearchFilterPage extends BasePage {
 	private static final String FILTER_PAGE_URL = "https://cars.av.by/filter";
 	private static final Random RANDOM = new Random();
 	private static final String ANY_OPTION_TEXT = "Любой";
+	private static final Duration LOADER_APPEAR_WAIT = Duration.ofSeconds(5);
 	private final String dropdownOptionTemplate = "//*[contains(@class,'dropdown__listbutton')][normalize-space(.)='%s']";
 
 	private final By brandDropdown = By.xpath("//button[@title='Марка']");
@@ -68,6 +71,28 @@ public class SearchFilterPage extends BasePage {
 		return yearTo;
 	}
 
+	@Step("Select random year to not earlier than {minYear}")
+	public int selectYearToAtLeast(int minYear) {
+		clickDropdownButton(yearToDropdown);
+		wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(dropdownOptions));
+		List<WebElement> options = driver.findElements(dropdownOptions).stream()
+				.filter(WebElement::isDisplayed)
+				.filter(WebElement::isEnabled)
+				.filter(option -> !option.getText().isBlank())
+				.filter(option -> !ANY_OPTION_TEXT.equalsIgnoreCase(option.getText().trim()))
+				.filter(option -> Integer.parseInt(option.getText().trim()) >= minYear)
+				.toList();
+		if (options.isEmpty()) {
+			throw new TimeoutException("No year-to options found at or above: " + minYear);
+		}
+		WebElement selectedOption = chooseRandomOption(options);
+		String selectedText = selectedOption.getText().trim();
+		applyDropdownSelection(yearToDropdown, selectedOption, selectedText);
+		int yearTo = Integer.parseInt(selectedText);
+		log.info("Selected year to (>= {}): {}", minYear, yearTo);
+		return yearTo;
+	}
+
 	@Step("Set price from: {price}")
 	public void setPriceFrom(String price) {
 		setPriceInput(priceFromInput, price);
@@ -82,17 +107,34 @@ public class SearchFilterPage extends BasePage {
 
 	@Step("Click show results button")
 	public void clickShowResultButton() {
+		String urlBefore = driver.getCurrentUrl();
 		clickWhenReady(showResultsButton);
+		waitForSearchResults(urlBefore);
 		log.info("Clicked show results button");
 	}
 
 	@Step("Wait for filtered results")
 	public void waitForResultsLoaded() {
-		By loadingOverlay = By.className("listing__loader");
-		wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingOverlay));
-		
+		waitForLoaderToFinish();
 		wait.until(ExpectedConditions.visibilityOfElementLocated(firstResultTitle));
 		log.info("Results loaded");
+	}
+
+	private void waitForSearchResults(String urlBefore) {
+		wait.until(driver -> !driver.getCurrentUrl().equals(urlBefore));
+		waitForLoaderToFinish();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(firstResultTitle));
+	}
+
+	private void waitForLoaderToFinish() {
+		By loadingOverlay = By.className("listing__loader");
+		try {
+			new WebDriverWait(driver, LOADER_APPEAR_WAIT)
+					.until(ExpectedConditions.visibilityOfElementLocated(loadingOverlay));
+		} catch (TimeoutException ignored) {
+			log.debug("Listing loader did not appear");
+		}
+		wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingOverlay));
 	}
 
 	@Step("Get result titles")
@@ -171,7 +213,7 @@ public class SearchFilterPage extends BasePage {
 
 	private void applyDropdownSelection(By dropdownButton, WebElement selectedOption, String selectedText) {
 		scrollToElement(selectedOption);
-		jsClick(selectedOption);
+		wait.until(ExpectedConditions.elementToBeClickable(selectedOption)).click();
 		wait.until(ExpectedConditions.invisibilityOfElementLocated(dropdownOptions));
 	}
 

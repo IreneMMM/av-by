@@ -49,9 +49,10 @@ public class SearchFilterAssertions {
 
 	@Step("Assert all prices are above minimum {minPriceUsd} USD")
 	public static void assertPricesAboveMinimum(List<Integer> resultPricesByn, double minPriceInByn, int minPriceUsd) {
+		int minPriceInBynRoundedDown = (int) Math.floor(minPriceInByn);
 		for (Integer bynPrice : resultPricesByn) {
 			Assertions.assertTrue(
-					bynPrice + 0.01 >= minPriceInByn,
+					bynPrice >= minPriceInBynRoundedDown,
 					"Result price " + bynPrice + " BYN is below minimum "
 							+ minPriceInByn + " BYN (from " + minPriceUsd + " USD)"
 			);

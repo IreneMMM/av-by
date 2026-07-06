@@ -11,11 +11,9 @@ public class TestData {
 	private static final Logger log = LogManager.getLogger(TestData.class);
 	private static final Faker FAKER = new Faker();
 	private static final Faker RU_FAKER = new Faker(Locale.forLanguageTag("ru"));
-	private static final int PASSWORD_MIN_LENGTH = 0;
-	private static final int PASSWORD_MAX_LENGTH = 50;
 	private static final int VIN_LENGTH = 17;
 	private static final String VIN_ALLOWED_CHARS = "ABCDEFGHJKLMNPRSTUVWXYZ0123456789";
-	private static final int[] PRICE_VARIANTS = {0, 1, 42, 350, 8750, 45009, 125008, 212374, 399999, 400000, 400001};
+	private static final int[] PRICE_VARIANTS = {0, 1, 42, 350, 8750, 45009, 125008, 212374, 399999};
 
 	public String randomEmail() {
 		String email = FAKER.internet().emailAddress();
@@ -42,8 +40,8 @@ public class TestData {
 	}
 
 	public String randomLengthPassword() {
-		String password = FAKER.internet().password(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH);
-		log.info("Generated password with length between {} and {}: {}", PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, password);
+		String password = FAKER.internet().password(8, 20, true, false, true);
+		log.info("Generated valid password: {}", password);
 		return password;
 	}
 

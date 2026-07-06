@@ -3,6 +3,7 @@ package by.av.ui;
 import by.av.ui.data.TestData;
 import by.av.ui.page.RegistrationPage;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,14 @@ public class RegistrationPageTest extends BaseTest {
 		String password = testData.randomLengthPassword();
 
 		registrationPage.getRegistrationForm();
-		registrationPage.fillRegistrationForm(name, email, password);
+		registrationPage.setNameInput(name);
+		registrationPage.setEmailInput(email);
+		registrationPage.setPasswordInput(password);
 		registrationPage.clickSubmitButton();
+
+		Assumptions.assumeFalse(
+				registrationPage.isCaptchaChallengeBlocking(),
+				"Registration blocked by reCAPTCHA challenge");
 
 		String actualSubmitTitle = registrationPage.getEmailSubmitTitle();
 		String actualSubmitMessage = registrationPage.getEmailSubmitMessage();
@@ -48,7 +55,9 @@ public class RegistrationPageTest extends BaseTest {
 	@Test
 	public void testNameIsCyrillic() {
 		registrationPage.getRegistrationForm();
-		registrationPage.fillRegistrationForm(testData.randomLatinName(), testData.randomEmail(), testData.randomLengthPassword());
+		registrationPage.setNameInput("Rick");
+		registrationPage.setEmailInput("testmail.com");
+		registrationPage.setPasswordInput("Qwe12");
 		registrationPage.clickSubmitButton();
 
 		Assertions.assertEquals(
@@ -56,43 +65,30 @@ public class RegistrationPageTest extends BaseTest {
 				registrationPage.getNameErrorMessage());
 	}
 
-	@DisplayName("Check registration name is too short")
+	@DisplayName("Check registration form validation with invalid data")
 	@Test
-	public void testNameIsTooShort() {
+	public void testRegistrationFormValidation() {
 		String invalidName = "Я";
-		registrationPage.getRegistrationForm();
-		registrationPage.fillRegistrationForm(invalidName, testData.randomEmail(), testData.randomLengthPassword());
-		registrationPage.clickSubmitButton();
-
-		Assertions.assertEquals(
-				RegistrationPage.ERROR_MESSAGE_NAME_TOO_SHORT,
-				registrationPage.getNameErrorMessage());
-	}
-
-	@DisplayName("Check registration email is not valid")
-	@Test
-	public void testEmailIsNotValid() {
 		String invalidEmail = "testmail.com";
-		registrationPage.getRegistrationForm();
-		registrationPage.fillRegistrationForm(testData.randomCyrillicName(), invalidEmail, testData.randomLengthPassword());
-		registrationPage.clickSubmitButton();
-
-		Assertions.assertEquals(
-				RegistrationPage.ERROR_MESSAGE_EMAIL_INVALID,
-				registrationPage.getEmailErrorMessage());
-	}
-
-	@DisplayName("Check registration password is too short")
-	@Test
-	public void testPasswordIsTooShort() {
 		String invalidPassword = "Qwe12";
+		
 		registrationPage.getRegistrationForm();
-		registrationPage.fillRegistrationForm(testData.randomCyrillicName(), testData.randomEmail(), invalidPassword);
+		registrationPage.setNameInput(invalidName);
+		registrationPage.setEmailInput(invalidEmail);
+		registrationPage.setPasswordInput(invalidPassword);
 		registrationPage.clickSubmitButton();
 
-		Assertions.assertEquals(
-				RegistrationPage.ERROR_MESSAGE_PASSWORD_INVALID_LENGTH,
-				registrationPage.getPasswordErrorMessage());
+		Assertions.assertAll(
+				() -> Assertions.assertEquals(
+						RegistrationPage.ERROR_MESSAGE_NAME_TOO_SHORT,
+						registrationPage.getNameErrorMessage()),
+				() -> Assertions.assertEquals(
+						RegistrationPage.ERROR_MESSAGE_EMAIL_INVALID,
+						registrationPage.getEmailErrorMessage()),
+				() -> Assertions.assertEquals(
+						RegistrationPage.ERROR_MESSAGE_PASSWORD_INVALID_LENGTH,
+						registrationPage.getPasswordErrorMessage())
+		);
 	}
 
 	@DisplayName("Check registration password does not contain digits and Latin letters")
@@ -100,7 +96,9 @@ public class RegistrationPageTest extends BaseTest {
 	public void testPasswordDoesNotContainDigitsAndLatinLetters() {
 		String invalidPassword = "12345678";
 		registrationPage.getRegistrationForm();
-		registrationPage.fillRegistrationForm(testData.randomCyrillicName(), testData.randomEmail(), invalidPassword);
+		registrationPage.setNameInput(testData.randomCyrillicName());
+		registrationPage.setEmailInput("testmail.com");
+		registrationPage.setPasswordInput(invalidPassword);
 		registrationPage.clickSubmitButton();
 
 		Assertions.assertEquals(

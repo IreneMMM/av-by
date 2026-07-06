@@ -21,7 +21,6 @@ public class SearchFilterPage extends BasePage {
 	private final By yearFromDropdown = By.xpath("//button[@title='Год от']");
 	private final By yearToDropdown = By.xpath("//div[@id='p-7-year']//button[@title='до']");
 	private final By priceFromInput = By.xpath("//span[text()='Цена от']/following-sibling::input");
-	private final By priceToInput = By.xpath("//span[text()='до']/following-sibling::input");
 	private final By currencyDropdown = By.xpath("//button[@id='p-10-price_currency']");
 	private final By showResultsButton = By.xpath("//button[@class='button button--primary button--block']");
 	private final By dropdownOptions = By.xpath("//*[contains(@class,'dropdown__listbutton')]");
@@ -75,12 +74,6 @@ public class SearchFilterPage extends BasePage {
 		log.info("Set minimum price: {}", price);
 	}
 
-	@Step("Set price to: {price}")
-	public void setPriceTo(String price) {
-		setPriceInput(priceToInput, price);
-		log.info("Set maximum price: {}", price);
-	}
-
 	@Step("Select currency: {currency}")
 	public void selectCurrency(String currency) {
 		selectDropdownOption(currencyDropdown, currency);
@@ -94,18 +87,17 @@ public class SearchFilterPage extends BasePage {
 	}
 
 	@Step("Wait for filtered results")
-	public void waitForResultsLoaded(String expectedText) {
-		if (expectedText == null || expectedText.isBlank()) {
-			wait.until(ExpectedConditions.visibilityOfElementLocated(firstResultTitle));
-		} else {
-			wait.until(ExpectedConditions.textToBePresentInElementLocated(firstResultTitle, expectedText));
-		}
-		log.info("Results loaded. Expected text: {}", expectedText == null ? "<empty>" : expectedText);
+	public void waitForResultsLoaded() {
+		By loadingOverlay = By.className("listing__loader");
+		wait.until(ExpectedConditions.invisibilityOfElementLocated(loadingOverlay));
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(firstResultTitle));
+		log.info("Results loaded");
 	}
 
 	@Step("Get result titles")
 	public List<String> getResultTitles() {
-		waitForResultsLoaded(null);
+		waitForResultsLoaded();
 		List<String> titles = getElementTexts(resultTitles);
 		log.info("Found {} result titles", titles.size());
 		return titles;
@@ -113,7 +105,7 @@ public class SearchFilterPage extends BasePage {
 
 	@Step("Get result prices")
 	public List<Integer> getResultPrices() {
-		waitForResultsLoaded(null);
+		waitForResultsLoaded();
 		List<Integer> prices = extractNumbers(resultPrices);
 		log.info("Found {} result prices", prices.size());
 		return prices;
@@ -121,7 +113,7 @@ public class SearchFilterPage extends BasePage {
 
 	@Step("Get result years")
 	public List<Integer> getResultYears() {
-		waitForResultsLoaded(null);
+		waitForResultsLoaded();
 		List<Integer> years = extractNumbers(resultYears);
 		log.info("Found {} result years", years.size());
 		return years;
@@ -129,7 +121,7 @@ public class SearchFilterPage extends BasePage {
 
 	@Step("Get result price currencies")
 	public List<String> getResultPriceCurrencies() {
-		waitForResultsLoaded(null);
+		waitForResultsLoaded();
 		List<String> currencies = getElementTexts(resultPriceCurrencies);
 		log.info("Found {} result currencies", currencies.size());
 		return currencies;
@@ -186,6 +178,7 @@ public class SearchFilterPage extends BasePage {
 	private void setPriceInput(By inputLocator, String price) {
 		WebElement input = wait.until(ExpectedConditions.elementToBeClickable(inputLocator));
 		input.sendKeys(price);
+		input.sendKeys(Keys.TAB);
 	}
 
 	private List<Integer> extractNumbers(By locator) {

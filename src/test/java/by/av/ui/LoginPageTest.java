@@ -8,8 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class LoginPageTest extends BaseTest {
 	LoginPage loginPage;
 	TestData testData;
@@ -110,9 +108,9 @@ public class LoginPageTest extends BaseTest {
 
 		String actualTitle = loginPage.getRecoveryPasswordTitle();
 		String expectedTitle = "Запрос на восстановление пароля";
-		assertAll(
-				() -> assertEquals(expectedTitle, actualTitle),
-				() -> assertFalse(loginPage.getRecoveryPasswordSubmitButton().isEnabled())
+		Assertions.assertAll(
+				() -> Assertions.assertEquals(expectedTitle, actualTitle),
+				() -> Assertions.assertFalse(loginPage.getRecoveryPasswordSubmitButton().isEnabled())
 		);
 	}
 

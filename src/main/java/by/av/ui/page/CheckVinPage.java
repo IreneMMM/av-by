@@ -18,8 +18,6 @@ public class CheckVinPage extends BasePage {
 	private final By whereFindVinButton = By.xpath("//button[contains(text(),\"Где найти VIN\")]");
 	private final By exampleReportLink = By.xpath("//div[@class=\"vin-main__content\"]//a[contains(text(),\"Пример отчёта\")]");
 	private final By whereFindVinTitle = By.xpath("//div[@class=\"modal__dialog modal__dialog--find-vin\"]//div[@class=\"modal__title\"]");
-	private final By whereFindVinCloseButton = By.xpath("//div[div[text()=\"Где найти VIN\"]]//button[@class=\"modal__close\"]");
-
 	public CheckVinPage() {
 		super();
 	}
@@ -51,7 +49,6 @@ public class CheckVinPage extends BasePage {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(vinInput)).sendKeys(vinCode);
 	}
 
-	//можно ли по-другому обработать открытие ссылки в новом окне?
 	@Step("Open VIN example report")
 	public void clickExampleReportLink() {
 		String originalWindow = driver.getWindowHandle();
@@ -70,11 +67,6 @@ public class CheckVinPage extends BasePage {
 	@Step("Open 'where find VIN' image")
 	public void openImageWhereFindVin() {
 		wait.until(ExpectedConditions.elementToBeClickable(whereFindVinButton)).click();
-	}
-
-	@Step("Close 'where find VIN' image")
-	public void closeImageWhereFindVin() {
-		driver.findElement(whereFindVinCloseButton).click();
 	}
 
 	@Step("Get VIN error message")

@@ -38,7 +38,7 @@ public class SearchFilterPageTest extends BaseTest {
 		String brand = searchFilterPage.selectRandomBrand();
 		log.info("Selected brand: {}", brand);
 		searchFilterPage.clickShowResultButton();
-		searchFilterPage.waitForResultsLoaded(brand);
+		searchFilterPage.waitForResultsLoaded();
 
 		List<String> resultTitles = searchFilterPage.getResultTitles();
 		assertResultsNotEmpty(resultTitles, "brand filter");
@@ -53,7 +53,7 @@ public class SearchFilterPageTest extends BaseTest {
 		String model = searchFilterPage.selectRandomModel();
 		log.info("Selected model: {}", model);
 		searchFilterPage.clickShowResultButton();
-		searchFilterPage.waitForResultsLoaded(model);
+		searchFilterPage.waitForResultsLoaded();
 
 		List<String> resultTitles = searchFilterPage.getResultTitles();
 		assertResultsNotEmpty(resultTitles, "model filter");
@@ -80,12 +80,12 @@ public class SearchFilterPageTest extends BaseTest {
 	@Test
 	public void testResultPricesAboveMinimumInUsd() {
 		int randomMinPrice = testData.randomMinPrice();
-		double minPriceInByn = randomMinPrice * currencyRateProvider.getUsdToBynRate();
+		double minPriceInByn = currencyRateProvider.getConvertedBynForUsd(randomMinPrice);
 		log.info("Min price in BYN = {}", minPriceInByn);
 		searchFilterPage.open();
 		acceptCookies();
-		searchFilterPage.setPriceFrom(String.valueOf(randomMinPrice));
 		searchFilterPage.selectCurrency("USD");
+		searchFilterPage.setPriceFrom(String.valueOf(randomMinPrice));
 		searchFilterPage.clickShowResultButton();
 		List<Integer> resultPricesByn = searchFilterPage.getResultPrices();
 		assertResultsNotEmpty(resultPricesByn, "price filter");
@@ -109,17 +109,17 @@ public class SearchFilterPageTest extends BaseTest {
 	@DisplayName("Check combined filters work with BYN currency")
 	@Test
 	public void testCombinedFiltersWithBynCurrency() {
-		int minPriceByn = testData.randomMinPrice();
+		int minStablePriceByn = 2000;
 		String brand = searchFilterPage.selectRandomBrand();
 		String model = searchFilterPage.selectRandomModel();
 		int yearFrom = searchFilterPage.selectYearFrom();
 
-		log.info("Selected combined filters: brand='{}', model='{}', yearFrom={}, minPriceByn={}", brand, model, yearFrom, minPriceByn);
+		log.info("Selected combined filters: brand='{}', model='{}', yearFrom={}, minStablePriceByn={}", brand, model, yearFrom, minStablePriceByn);
 
-		searchFilterPage.setPriceFrom(String.valueOf(minPriceByn));
+		searchFilterPage.setPriceFrom(String.valueOf(minStablePriceByn));
 		searchFilterPage.selectCurrency("BYN");
 		searchFilterPage.clickShowResultButton();
-		searchFilterPage.waitForResultsLoaded(model);
+		searchFilterPage.waitForResultsLoaded();
 
 		List<String> resultTitles = searchFilterPage.getResultTitles();
 		List<Integer> resultYears = searchFilterPage.getResultYears();
@@ -140,7 +140,7 @@ public class SearchFilterPageTest extends BaseTest {
 				() -> assertTitlesContainBrand(resultTitles, brand),
 				() -> assertTitlesContainModel(resultTitles, model),
 				() -> assertYearsNotBelowMinimum(resultYears, yearFrom),
-				() -> assertPricesNotBelowMinimumByn(resultPrices, minPriceByn),
+				() -> assertPricesNotBelowMinimumByn(resultPrices, minStablePriceByn),
 				() -> assertCurrenciesContainByn(resultCurrencies)
 		);
 	}

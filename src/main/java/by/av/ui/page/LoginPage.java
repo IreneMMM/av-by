@@ -20,10 +20,20 @@ public class LoginPage extends BasePage {
 	private final By recoveryPasswordSubmitButton = By.xpath("//div[@aria-labelledby=\"почте\"]//button[contains(text(),\"Отправить\")]");
 	private final By recoveryPasswordEmailInput = By.xpath("//input[@id=\"email\"]");
 	private final By recoveryPasswordByEmailButton = By.xpath("//div[contains(@class, 'drawer__slide--active')]//button[text()='почте']");
-	private final By activeLoginDrawer = By.xpath("//div[contains(@class,'drawer__slide--active')]");
 
 	public LoginPage() {
 		super();
+	}
+
+	private static String maskPassword(String password) {
+		if (password == null) {
+			return "null";
+		}
+		int len = password.length();
+		if (len <= 2) {
+			return "*".repeat(len);
+		}
+		return password.charAt(0) + "*".repeat(len - 2) + password.charAt(len - 1);
 	}
 
 	public WebElement getSubmitButton() {
@@ -51,11 +61,13 @@ public class LoginPage extends BasePage {
 	@Step("Enter login: {email}")
 	public void setEmailOrLoginInput(String email) {
 		wait.until(ExpectedConditions.elementToBeClickable(emailOrLoginInput)).sendKeys(email);
+		log.info("Entered login: {}", email);
 	}
 
-	@Step("Enter password: {pass}")
+	@Step("Enter password")
 	public void setPasswordInput(String pass) {
 		wait.until(ExpectedConditions.elementToBeClickable(passwordInput)).sendKeys(pass);
+		log.info("Entered password: {} (len={})", maskPassword(pass), pass == null ? 0 : pass.length());
 	}
 
 	@Step("Enter recovery email: {email}")
@@ -79,9 +91,19 @@ public class LoginPage extends BasePage {
 	}
 
 	@Step("Wait until login form is closed")
-	public void waitForLoginFormToClose() {
-		wait.until(ExpectedConditions.invisibilityOfElementLocated(activeLoginDrawer));
-		log.info("Login drawer closed");
+	public boolean waitForLoginFormToClose() {
+		try {
+			wait.until(ExpectedConditions.invisibilityOfElementLocated(emailOrLoginInput));
+			log.info("Login drawer closed (email input is not visible)");
+			return true;
+		} catch (org.openqa.selenium.TimeoutException e) {
+			String error = getErrorMessageIfPresent();
+			if (error != null && !error.isBlank()) {
+				log.error("Login failed inside drawer. Error message: {}", error);
+				return false;
+			}
+			throw e;
+		}
 	}
 
 	@Step("Clear login input")
@@ -104,6 +126,21 @@ public class LoginPage extends BasePage {
 		String message = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText();
 		log.info("Login error message: {}", message);
 		return message;
+	}
+
+	@Step("Try get login error message if present")
+	public String getErrorMessageIfPresent() {
+		try {
+			WebElement el = driver.findElement(errorMessage);
+			if (el.isDisplayed()) {
+				String message = el.getText().trim();
+				log.info("Login error message if present: {}", message);
+				return message;
+			}
+		} catch (org.openqa.selenium.NoSuchElementException ignored) {
+			// ok - error message not present
+		}
+		return null;
 	}
 
 	@Step("Get recovery password title")

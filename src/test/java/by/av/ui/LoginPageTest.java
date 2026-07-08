@@ -5,6 +5,7 @@ import by.av.ui.data.TestData;
 import by.av.ui.page.LoginPage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -37,7 +38,14 @@ public class LoginPageTest extends BaseTest {
 				EnvConfig.require(EnvConfig.VALID_LOGIN),
 				EnvConfig.require(EnvConfig.VALID_PASSWORD));
 
-		loginPage.waitForLoginFormToClose();
+		boolean closed = loginPage.waitForLoginFormToClose();
+		if (!closed) {
+			String error = loginPage.getErrorMessageIfPresent();
+			Assumptions.assumeFalse(
+					TOO_MANY_ATTEMPTS_MESSAGE.equals(error),
+					"Login skipped: too many invalid password attempts (rate limit).");
+			Assertions.fail("Login failed with error message: " + error);
+		}
 
 		Assertions.assertTrue(
 				homePage.isUserLoggedIn(),

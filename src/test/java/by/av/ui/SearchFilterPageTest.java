@@ -17,6 +17,8 @@ import static by.av.ui.assertions.SearchFilterAssertions.*;
 
 public class SearchFilterPageTest extends BaseTest {
 	private static final Logger log = LogManager.getLogger(SearchFilterPageTest.class);
+	private static final int MAX_COMBINED_FILTER_ATTEMPTS = 5;
+	private static final int MIN_STABLE_PRICE_BYN = 2000;
 	SearchFilterPage searchFilterPage;
 	CurrencyRateProvider currencyRateProvider;
 	TestData testData;
@@ -109,17 +111,39 @@ public class SearchFilterPageTest extends BaseTest {
 	@DisplayName("Check combined filters work with BYN currency")
 	@Test
 	public void testCombinedFiltersWithBynCurrency() {
-		int minStablePriceByn = 2000;
-		String brand = searchFilterPage.selectRandomBrand();
-		String model = searchFilterPage.selectRandomModel();
-		int yearFrom = searchFilterPage.selectYearFrom();
+		String brand = null;
+		String model = null;
+		int yearFrom = 0;
+		boolean resultsFound = false;
 
-		log.info("Selected combined filters: brand='{}', model='{}', yearFrom={}, minStablePriceByn={}", brand, model, yearFrom, minStablePriceByn);
+		for (int attempt = 1; attempt <= MAX_COMBINED_FILTER_ATTEMPTS; attempt++) {
+			if (attempt > 1) {
+				searchFilterPage.open();
+				acceptCookies();
+			}
 
-		searchFilterPage.setPriceFrom(String.valueOf(minStablePriceByn));
-		searchFilterPage.selectCurrency("BYN");
-		searchFilterPage.clickShowResultButton();
-		searchFilterPage.waitForResultsLoaded();
+			brand = searchFilterPage.selectRandomBrand();
+			model = searchFilterPage.selectRandomModel();
+			yearFrom = searchFilterPage.selectYearFrom();
+			searchFilterPage.selectCurrency("BYN");
+			searchFilterPage.setPriceFrom(String.valueOf(MIN_STABLE_PRICE_BYN));
+
+
+			log.info("Combined filters attempt {}/{}: brand='{}', model='{}', yearFrom={}, minStablePriceByn={}",
+					attempt, MAX_COMBINED_FILTER_ATTEMPTS, brand, model, yearFrom, MIN_STABLE_PRICE_BYN);
+
+			if (searchFilterPage.clickShowResultButtonAndHasResults()) {
+				resultsFound = true;
+				break;
+			}
+		}
+
+		Assertions.assertTrue(resultsFound,
+				"No results found after " + MAX_COMBINED_FILTER_ATTEMPTS + " combined filter attempts");
+
+		final String selectedBrand = brand;
+		final String selectedModel = model;
+		final int selectedYearFrom = yearFrom;
 
 		List<String> resultTitles = searchFilterPage.getResultTitles();
 		List<Integer> resultYears = searchFilterPage.getResultYears();
@@ -137,10 +161,10 @@ public class SearchFilterPageTest extends BaseTest {
 				resultTitles.size(), resultYears.size(), resultPrices.size(), resultCurrencies.size());
 
 		Assertions.assertAll(
-				() -> assertTitlesContainBrand(resultTitles, brand),
-				() -> assertTitlesContainModel(resultTitles, model),
-				() -> assertYearsNotBelowMinimum(resultYears, yearFrom),
-				() -> assertPricesNotBelowMinimumByn(resultPrices, minStablePriceByn),
+				() -> assertTitlesContainBrand(resultTitles, selectedBrand),
+				() -> assertTitlesContainModel(resultTitles, selectedModel),
+				() -> assertYearsNotBelowMinimum(resultYears, selectedYearFrom),
+				() -> assertPricesNotBelowMinimumByn(resultPrices, MIN_STABLE_PRICE_BYN),
 				() -> assertCurrenciesContainByn(resultCurrencies)
 		);
 	}

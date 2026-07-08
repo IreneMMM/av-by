@@ -107,10 +107,40 @@ public class SearchFilterPage extends BasePage {
 
 	@Step("Click show results button")
 	public void clickShowResultButton() {
+		clickShowResultButtonAndHasResults(true);
+		log.info("Clicked show results button");
+	}
+
+	@Step("Click show results button and return whether listings were found")
+	public boolean clickShowResultButtonAndHasResults() {
+		boolean hasResults = clickShowResultButtonAndHasResults(false);
+		log.info("Clicked show results button, listings found: {}", hasResults);
+		return hasResults;
+	}
+
+	private boolean clickShowResultButtonAndHasResults(boolean failIfEmpty) {
 		String urlBefore = driver.getCurrentUrl();
 		clickWhenReady(showResultsButton);
-		waitForSearchResults(urlBefore);
-		log.info("Clicked show results button");
+		wait.until(driver -> !driver.getCurrentUrl().equals(urlBefore));
+		waitForLoaderToFinish();
+		if (isFirstResultVisible()) {
+			return true;
+		}
+		if (failIfEmpty) {
+			wait.until(ExpectedConditions.visibilityOfElementLocated(firstResultTitle));
+		}
+		return false;
+	}
+
+	private boolean isFirstResultVisible() {
+		try {
+			new WebDriverWait(driver, Duration.ofSeconds(5))
+					.until(ExpectedConditions.visibilityOfElementLocated(firstResultTitle));
+			return true;
+		} catch (TimeoutException e) {
+			log.info("No listings visible for selected filters");
+			return false;
+		}
 	}
 
 	@Step("Wait for filtered results")
@@ -118,12 +148,6 @@ public class SearchFilterPage extends BasePage {
 		waitForLoaderToFinish();
 		wait.until(ExpectedConditions.visibilityOfElementLocated(firstResultTitle));
 		log.info("Results loaded");
-	}
-
-	private void waitForSearchResults(String urlBefore) {
-		wait.until(driver -> !driver.getCurrentUrl().equals(urlBefore));
-		waitForLoaderToFinish();
-		wait.until(ExpectedConditions.visibilityOfElementLocated(firstResultTitle));
 	}
 
 	private void waitForLoaderToFinish() {

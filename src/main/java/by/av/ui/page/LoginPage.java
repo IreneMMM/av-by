@@ -94,7 +94,7 @@ public class LoginPage extends BasePage {
 
 	@Step("Open password recovery form")
 	public void clickForgetPasswordButton() {
-		wait.until(ExpectedConditions.elementToBeClickable(forgetPasswordButton)).click();
+		clickWhenReady(forgetPasswordButton);
 	}
 
 	@Step("Get login error message")

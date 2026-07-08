@@ -20,6 +20,7 @@ public class LoginPage extends BasePage {
 	private final By recoveryPasswordSubmitButton = By.xpath("//div[@aria-labelledby=\"почте\"]//button[contains(text(),\"Отправить\")]");
 	private final By recoveryPasswordEmailInput = By.xpath("//input[@id=\"email\"]");
 	private final By recoveryPasswordByEmailButton = By.xpath("//div[contains(@class, 'drawer__slide--active')]//button[text()='почте']");
+	private final By activeLoginDrawer = By.xpath("//div[contains(@class,'drawer__slide--active')]");
 
 	public LoginPage() {
 		super();
@@ -65,6 +66,20 @@ public class LoginPage extends BasePage {
 	@Step("Submit login form")
 	public void clickSubmitButton() {
 		driver.findElement(submitButton).click();
+	}
+
+	@Step("Login with credentials: login={login}")
+	public void loginAndSubmitForm(String login, String password) {
+		clickLoginByEmailButton();
+		setEmailOrLoginInput(login);
+		setPasswordInput(password);
+		clickSubmitButton();
+	}
+
+	@Step("Wait until login form is closed")
+	public void waitForLoginFormToClose() {
+		wait.until(ExpectedConditions.invisibilityOfElementLocated(activeLoginDrawer));
+		log.info("Login drawer closed");
 	}
 
 	@Step("Clear login input")

@@ -3,7 +3,6 @@ package by.av.ui;
 import by.av.ui.data.TestData;
 import by.av.ui.page.RegistrationPage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,22 +22,14 @@ public class RegistrationPageTest extends BaseTest {
 		testData = new TestData();
 	}
 
-	@DisplayName("Check submission code is sent")
+	@DisplayName("Check email confirmation screen after successful registration")
 	@Test
-	public void testSubmissionCodeIsSent() {
-		String name = testData.randomCyrillicName();
+	public void testEmailConfirmationScreenAfterSuccessfulRegistration() {
 		String email = testData.randomEmail();
-		String password = testData.randomLengthPassword();
+		registrationPage.submitRegistrationForm(
+				testData.randomCyrillicName(), email, testData.randomLengthPassword());
 
-		registrationPage.getRegistrationForm();
-		registrationPage.setNameInput(name);
-		registrationPage.setEmailInput(email);
-		registrationPage.setPasswordInput(password);
-		registrationPage.clickSubmitButton();
-
-		Assumptions.assumeFalse(
-				registrationPage.isCaptchaChallengeBlocking(),
-				"Registration blocked by reCAPTCHA challenge");
+		skipIfCaptchaAppears(registrationPage);
 
 		String actualSubmitTitle = registrationPage.getEmailSubmitTitle();
 		String actualSubmitMessage = registrationPage.getEmailSubmitMessage();
@@ -51,32 +42,21 @@ public class RegistrationPageTest extends BaseTest {
 		);
 	}
 
-	@DisplayName("Check registration name is Cyrillic")
+	@DisplayName("Check error message if name is not Cyrillic")
 	@Test
-	public void testNameIsCyrillic() {
-		registrationPage.getRegistrationForm();
-		registrationPage.setNameInput("Rick");
-		registrationPage.setEmailInput("testmail.com");
-		registrationPage.setPasswordInput("Qwe12");
-		registrationPage.clickSubmitButton();
+	public void testErrorMessageIfNameIsNotCyrillic() {
+		registrationPage.submitRegistrationForm(
+				testData.randomLatinName(), testData.randomEmail(), testData.randomLengthPassword());
 
 		Assertions.assertEquals(
 				RegistrationPage.ERROR_MESSAGE_NAME_NOT_CYRILLIC,
 				registrationPage.getNameErrorMessage());
 	}
 
-	@DisplayName("Check registration form validation with invalid data")
+	@DisplayName("Check errors for registration with invalid credentials")
 	@Test
-	public void testRegistrationFormValidation() {
-		String invalidName = "Я";
-		String invalidEmail = "testmail.com";
-		String invalidPassword = "Qwe12";
-		
-		registrationPage.getRegistrationForm();
-		registrationPage.setNameInput(invalidName);
-		registrationPage.setEmailInput(invalidEmail);
-		registrationPage.setPasswordInput(invalidPassword);
-		registrationPage.clickSubmitButton();
+	public void testErrorsForRegistrationWithInvalidCredentials() {
+		registrationPage.submitRegistrationForm("Я", "testmail.com", "Qwe12");
 
 		Assertions.assertAll(
 				() -> Assertions.assertEquals(
@@ -91,15 +71,11 @@ public class RegistrationPageTest extends BaseTest {
 		);
 	}
 
-	@DisplayName("Check registration password does not contain digits and Latin letters")
+	@DisplayName("Check error message if password does not contain latin letters")
 	@Test
-	public void testPasswordDoesNotContainDigitsAndLatinLetters() {
-		String invalidPassword = "12345678";
-		registrationPage.getRegistrationForm();
-		registrationPage.setNameInput(testData.randomCyrillicName());
-		registrationPage.setEmailInput("testmail.com");
-		registrationPage.setPasswordInput(invalidPassword);
-		registrationPage.clickSubmitButton();
+	public void testErrorMessageIfPasswordHasNoLatinLetters() {
+		registrationPage.submitRegistrationForm(
+				testData.randomCyrillicName(), testData.randomEmail(), "12345678");
 
 		Assertions.assertEquals(
 				RegistrationPage.ERROR_MESSAGE_PASSWORD_INVALID_CHARS,

@@ -1,5 +1,6 @@
 package by.av.ui;
 
+import by.av.config.EnvConfig;
 import by.av.ui.data.TestData;
 import by.av.ui.page.LoginPage;
 import org.junit.jupiter.api.Assertions;
@@ -22,17 +23,18 @@ public class LoginPageTest extends BaseTest {
 		testData = new TestData();
 	}
 
-	@DisplayName("Check submit button is enabled with valid credentials")
+	@DisplayName("Check login with valid credentials opens user navigation")
 	@Test
-	public void testSubmitButtonIsEnabledWithValidCredentials() {
-		String emailOrLogin = testData.randomEmail();
-		String password = testData.strictLengthPassword(10);
+	public void testLoginWithValidCredentials() {
+		loginPage.loginAndSubmitForm(
+				EnvConfig.require(EnvConfig.VALID_LOGIN),
+				EnvConfig.require(EnvConfig.VALID_PASSWORD));
 
-		loginPage.clickLoginByEmailButton();
-		loginPage.setEmailOrLoginInput(emailOrLogin);
-		loginPage.setPasswordInput(password);
+		loginPage.waitForLoginFormToClose();
 
-		Assertions.assertTrue(loginPage.getSubmitButton().isEnabled());
+		Assertions.assertTrue(
+				homePage.isUserLoggedIn(),
+				"User is not logged in after login with valid credentials");
 	}
 
 	@DisplayName("Check login with invalid email or login")

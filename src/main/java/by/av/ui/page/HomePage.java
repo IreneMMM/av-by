@@ -25,6 +25,7 @@ public class HomePage extends BasePage {
 	private final By lightThemeButton = By.xpath("//button[contains(@class,\"theme__button--light\")]");
 	private final By autoThemeButton = By.xpath("//button[contains(@class,\"theme__button--auto\")]");
 	private final By loginSlider = By.xpath("//div[@class=\"drawer__slide drawer__slide--active\"]");
+	private final By loginNavItem = By.xpath("//li[contains(@class,'nav__item--login')]");
 
 	public HomePage() {
 		super();
@@ -116,8 +117,15 @@ public class HomePage extends BasePage {
 
 	@Step("Check login slider is opened")
 	public boolean isLoginSliderOpened() {
-		boolean opened = wait.until(ExpectedConditions.visibilityOfElementLocated(loginSlider)).isDisplayed();
-		log.info("Login slider opened: {}", opened);
-		return opened;
+		boolean isOpened = wait.until(ExpectedConditions.visibilityOfElementLocated(loginSlider)).isDisplayed();
+		log.info("Login slider opened: {}", isOpened);
+		return isOpened;
+	}
+
+	@Step("Check user is logged in")
+	public boolean isUserLoggedIn() {
+		boolean isLoggedIn = wait.until(ExpectedConditions.invisibilityOfElementLocated(loginNavItem));
+		log.info("User logged in: {}", isLoggedIn);
+		return isLoggedIn;
 	}
 }

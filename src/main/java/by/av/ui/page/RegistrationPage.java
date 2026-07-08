@@ -18,15 +18,18 @@ public class RegistrationPage extends BasePage {
 	public static final String ERROR_MESSAGE_EMAIL_INVALID = "Введите почту полностью. Например, info@av.by";
 	public static final String ERROR_MESSAGE_PASSWORD_INVALID_LENGTH = "Минимум 8 символов";
 	public static final String ERROR_MESSAGE_PASSWORD_INVALID_CHARS = "В пароле должны быть цифры и латинские буквы";
-	private final By emailForm = By.xpath("//form[.//input[@id='regEmail']]");
 	private final By registrationButton = By.xpath("//span[contains(text(),\"Регистрация\")]");
 	private final By registrationByEmailButton = By.xpath("//div[@class=\"drawer__slide drawer__slide--active\"]" + "//button[contains(text(),\"почте\")]");
 	private final By nameInput = By.xpath("//input[@id=\"name\"]");
 	private final By emailInput = By.xpath("//input[@id=\"regEmail\"]");
 	private final By passwordInput = By.xpath("//input[@id=\"regPassword\"]");
+	private final By nameError = By.xpath("//input[@id='name']/following::div[@class='error-message'][1]");
+	private final By emailError = By.xpath("//input[@id='regEmail']/following::div[@class='error-message'][1]");
+	private final By passwordError = By.xpath("//input[@id='regPassword']/following::div[@class='error-message'][1]");
 	private final By submitButton = By.xpath("//form[.//input[@id='regEmail']]//button[normalize-space()='Зарегистрироваться']");
 	private final By emailSubmitTitle = By.xpath("//div[contains(text(), \"Подтверждение почтового адреса\")]");
 	private final By emailSubmitMessage = By.xpath("//p[contains(text(), 'Мы отправили письмо')]");
+	private final By captchaFrame = By.xpath("//iframe[contains(@src, 'recaptcha/api2/bframe')]");
 
 	public RegistrationPage() {
 		super();
@@ -66,6 +69,15 @@ public class RegistrationPage extends BasePage {
 		clickRegistrationByEmail();
 	}
 
+	@Step("Fill and submit registration form: name={name}, email={email}")
+	public void submitRegistrationForm(String name, String email, String password) {
+		getRegistrationForm();
+		setNameInput(name);
+		setEmailInput(email);
+		setPasswordInput(password);
+		clickSubmitButton();
+	}
+
 	@Step("Submit registration form")
 	public void clickSubmitButton() {
 		wait.until(ExpectedConditions.presenceOfElementLocated(submitButton));
@@ -73,17 +85,19 @@ public class RegistrationPage extends BasePage {
 				"document.querySelector('form input#regEmail').closest('form').requestSubmit();");
 	}
 
-	@Step("Check if reCAPTCHA challenge is blocking registration")
-	public boolean isCaptchaChallengeBlocking() {
-		return driver.findElements(By.cssSelector("iframe[src*='recaptcha/api2/bframe']"))
-				.stream()
-				.anyMatch(WebElement::isDisplayed);
+	@Step("Check if reCAPTCHA appears")
+	public boolean isCaptchaAppears() {
+		for (WebElement element : driver.findElements(captchaFrame)) {
+			if (element.isDisplayed()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Step("Get email confirmation title")
 	public String getEmailSubmitTitle() {
-		WebDriverWait extendedWait = new WebDriverWait(driver, Duration.ofSeconds(30));
-		String title = extendedWait.until(ExpectedConditions.visibilityOfElementLocated(emailSubmitTitle)).getText();
+		String title = wait.until(ExpectedConditions.visibilityOfElementLocated(emailSubmitTitle)).getText();
 		log.info("Registration confirmation title: {}", title);
 		return title;
 	}
@@ -97,29 +111,22 @@ public class RegistrationPage extends BasePage {
 
 	@Step("Get registration name error message")
 	public String getNameErrorMessage() {
-		return getValidationMessageByText(ERROR_MESSAGE_NAME_NOT_CYRILLIC, ERROR_MESSAGE_NAME_TOO_SHORT);
+		return getFieldErrorMessage(nameError);
 	}
 
 	@Step("Get registration email error message")
 	public String getEmailErrorMessage() {
-		return getValidationMessageByText(ERROR_MESSAGE_EMAIL_INVALID);
+		return getFieldErrorMessage(emailError);
 	}
 
 	@Step("Get registration password error message")
 	public String getPasswordErrorMessage() {
-		return getValidationMessageByText(ERROR_MESSAGE_PASSWORD_INVALID_LENGTH, ERROR_MESSAGE_PASSWORD_INVALID_CHARS);
+		return getFieldErrorMessage(passwordError);
 	}
 
-	private String getValidationMessageByText(String... expectedTexts) {
-		return wait.until(driver -> {
-			String formText = driver.findElement(emailForm).getText();
-			for (String expectedText : expectedTexts) {
-				if (formText.contains(expectedText)) {
-					log.info("Validation message found: {}", expectedText);
-					return expectedText;
-				}
-			}
-			return null;
-		});
+	private String getFieldErrorMessage(By errorLocator) {
+		String message = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator)).getText().trim();
+		log.info("Validation message found: {}", message);
+		return message;
 	}
 }

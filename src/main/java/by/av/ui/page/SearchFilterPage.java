@@ -246,8 +246,22 @@ public class SearchFilterPage extends BasePage {
 
 	private void setPriceInput(By inputLocator, String price) {
 		WebElement input = wait.until(ExpectedConditions.elementToBeClickable(inputLocator));
+		scrollToElement(input);
+		input.click();
+		input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
 		input.sendKeys(price);
 		input.sendKeys(Keys.TAB);
+
+		String expectedDigits = price.replaceAll("\\D+", "");
+		wait.until(driver -> {
+			try {
+				String actual = input.getAttribute("value");
+				if (actual == null) return false;
+				return actual.replaceAll("\\D+", "").equals(expectedDigits);
+			} catch (StaleElementReferenceException e) {
+				return false;
+			}
+		});
 	}
 
 	private List<Integer> extractNumbers(By locator) {

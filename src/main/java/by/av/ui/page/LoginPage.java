@@ -11,11 +11,11 @@ public class LoginPage extends BasePage {
 	private static final Logger log = LogManager.getLogger(LoginPage.class);
 
 	private final By loginByEmailButton = By.xpath("//button[contains(text(),\"почте или логину\")]");
-	private final By emailOrLoginInput = By.xpath("//input[@id=\"authLogin\"]");
-	private final By passwordInput = By.xpath("//input[@id=\"loginPassword\"]");
-	private final By forgetPasswordButton = By.xpath("//button[contains(text(), \"Не помню пароль\")]");
-	private final By submitButton = By.xpath("//button[@class=\"button button--action\"]");
-	private final By errorMessage = By.xpath("//div[@class=\"error-message\"]");
+	private final By emailOrLoginInput = By.xpath("//div[contains(@class,'drawer__slide--active')]//input[@id='authLogin']");
+	private final By passwordInput = By.xpath("//div[contains(@class,'drawer__slide--active')]//input[@id='loginPassword']");
+	private final By forgetPasswordButton = By.xpath("//div[contains(@class,'drawer__slide--active')]//button[contains(text(), 'Не помню пароль')]");
+	private final By submitButton = By.xpath("//div[contains(@class,'drawer__slide--active')]//button[@class='button button--action']");
+	private final By errorMessage = By.xpath("//div[contains(@class,'drawer__slide--active')]//div[@class='error-message']");
 	private final By recoveryPasswordTitle = By.xpath("//div[contains(text(),\"Запрос на восстановление пароля\")]");
 	private final By recoveryPasswordSubmitButton = By.xpath("//div[@aria-labelledby=\"почте\"]//button[contains(text(),\"Отправить\")]");
 	private final By recoveryPasswordEmailInput = By.xpath("//input[@id=\"email\"]");
@@ -40,7 +40,7 @@ public class LoginPage extends BasePage {
 
 	@Step("Select login by email or login")
 	public void clickLoginByEmailButton() {
-		wait.until(ExpectedConditions.elementToBeClickable(loginByEmailButton)).click();
+		clickWhenReady(loginByEmailButton);
 	}
 
 	@Step("Select password recovery by email")
@@ -55,17 +55,19 @@ public class LoginPage extends BasePage {
 
 	@Step("Enter password: {pass}")
 	public void setPasswordInput(String pass) {
-		driver.findElement(passwordInput).sendKeys(pass);
+		wait.until(ExpectedConditions.elementToBeClickable(passwordInput)).sendKeys(pass);
 	}
 
 	@Step("Enter recovery email: {email}")
 	public void setRecoveryPasswordEmailInput(String email) {
-		driver.findElement(recoveryPasswordEmailInput).sendKeys(email);
+		wait.until(ExpectedConditions.elementToBeClickable(recoveryPasswordEmailInput)).sendKeys(email);
 	}
 
 	@Step("Submit login form")
 	public void clickSubmitButton() {
-		driver.findElement(submitButton).click();
+		WebElement button = wait.until(ExpectedConditions.elementToBeClickable(submitButton));
+		scrollToElement(button);
+		button.click();
 	}
 
 	@Step("Login with credentials: login={login}")

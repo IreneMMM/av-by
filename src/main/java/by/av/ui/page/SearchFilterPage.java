@@ -210,7 +210,9 @@ public class SearchFilterPage extends BasePage {
 	private void selectDropdownOption(By dropdownButton, String optionText) {
 		clickDropdownButton(dropdownButton);
 		WebElement option = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(String.format(dropdownOptionTemplate, optionText))));
-		option.click();
+		scrollToElement(option);
+		jsClick(option);
+		wait.until(ExpectedConditions.invisibilityOfElementLocated(dropdownOptions));
 	}
 
 	private String selectRandomDropdownOption(By dropdownButton) {
@@ -237,7 +239,8 @@ public class SearchFilterPage extends BasePage {
 
 	private void applyDropdownSelection(By dropdownButton, WebElement selectedOption, String selectedText) {
 		scrollToElement(selectedOption);
-		wait.until(ExpectedConditions.elementToBeClickable(selectedOption)).click();
+		wait.until(ExpectedConditions.elementToBeClickable(selectedOption));
+		jsClick(selectedOption);
 		wait.until(ExpectedConditions.invisibilityOfElementLocated(dropdownOptions));
 	}
 
